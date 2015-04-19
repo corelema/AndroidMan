@@ -34,7 +34,7 @@ public class GLRenderer implements Renderer {
     private static float offsety = 0.0f;
 
     // Background variables
-    private final int numberOfBorders = 4;
+    private final int numberOfBorders = 49;
 
     // Our screenresolution
     float   mScreenWidth = 1920;
@@ -170,65 +170,56 @@ public class GLRenderer implements Renderer {
     {
         vertices = new float[numberOfBorders*4*3];
 
-        // We have create the vertices of our view.
-        //for (int i=0;i<numberOfBorders;i++)
-        //{
-            int i = 0;
-            vertices[i*12 + 0] = 10.0f;
-            vertices[i*12 + 1] = 510.0f;
-            vertices[i*12 + 2] = 0.0f;
-            vertices[i*12 + 3] = 10.0f;
-            vertices[i*12 + 4] = 500.0f;
-            vertices[i*12 + 5] = 0.0f;
-            vertices[i*12 + 6] = 1000.0f;
-            vertices[i*12 + 7] = 500.0f;
-            vertices[i*12 + 8] = 0.0f;
-            vertices[i*12 + 9] = 1000.0f;
-            vertices[i*12 + 10] = 510.0f;
-            vertices[i*12 + 11] = 0.0f;
+        createRectangle(0,120,360,370,0);
+        createRectangle(110,120,370,420,1);
+        createRectangle(0,120,420,430,2);
+        createRectangle(0,10,430,620,3);
+        createRectangle(10,570,610,620,4);
+        createRectangle(560,570,430,610,5);
+        createRectangle(450,570,420,430,6);
+        createRectangle(450,460,370,420,7);
+        createRectangle(450,570,360,370,8);
+        createRectangle(450,570,300,310,9);
+        createRectangle(450,460,250,300,10);
+        createRectangle(450,570,240,250,11);
+        createRectangle(560,570,10,240,12);
+        createRectangle(0,570,0,10,13);
+        createRectangle(0,10,10,240,14);
+        createRectangle(0,120,240,250,15);
+        createRectangle(110,120,250,300,16);
+        createRectangle(0,120,300,310,17);
+        createRectangle(280,290,540,620,18);
+        createRectangle(280,290,10,120,19);
+        createRectangle(230,340,120,130,20);
+        createRectangle(60,120,540,560,21);
+        createRectangle(170,230,540,560,22);
+        createRectangle(340,400,540,560,23);
+        createRectangle(450,510,540,560,24);
+        createRectangle(60,120,480,490,25);
+        createRectangle(230,340,480,490,26);
+        createRectangle(450,510,480,490,27);
+        createRectangle(170,180,360,490,28);
+        createRectangle(280,290,430,480,29);
+        createRectangle(390,400,360,490,30);
+        createRectangle(180,230,420,430,31);
+        createRectangle(340,390,420,430,32);
+        createRectangle(170,180,240,310,33);
+        createRectangle(390,400,240,310,34);
+        createRectangle(230,340,240,250,35);
+        createRectangle(280,290,170,240,36);
+        createRectangle(60,120,180,190,37);
+        createRectangle(170,230,180,190,38);
+        createRectangle(340,400,180,190,39);
+        createRectangle(450,510,180,190,40);
+        createRectangle(110,120,120,180,41);
+        createRectangle(450,460,120,180,42);
+        createRectangle(10,60,120,130,43);
+        createRectangle(510,560,120,130,44);
+        createRectangle(170,180,70,120,45);
+        createRectangle(390,400,70,120,46);
+        createRectangle(60,230,60,70,47);
+        createRectangle(340,510,60,70,48);
 
-            i = 1;
-            vertices[i*12 + 0] = 10.0f;
-            vertices[i*12 + 1] = 1010.0f;
-            vertices[i*12 + 2] = 0.0f;
-            vertices[i*12 + 3] = 10.0f;
-            vertices[i*12 + 4] = 1000.0f;
-            vertices[i*12 + 5] = 0.0f;
-            vertices[i*12 + 6] = 1000.0f;
-            vertices[i*12 + 7] = 1000.0f;
-            vertices[i*12 + 8] = 0.0f;
-            vertices[i*12 + 9] = 1000.0f;
-            vertices[i*12 + 10] = 1010.0f;
-            vertices[i*12 + 11] = 0.0f;
-
-            i = 2;
-            vertices[i*12 + 0] = 10.0f;
-            vertices[i*12 + 1] = 1000.0f;
-            vertices[i*12 + 2] = 0.0f;
-            vertices[i*12 + 3] = 10.0f;
-            vertices[i*12 + 4] = 510.0f;
-            vertices[i*12 + 5] = 0.0f;
-            vertices[i*12 + 6] = 20.0f;
-            vertices[i*12 + 7] = 510.0f;
-            vertices[i*12 + 8] = 0.0f;
-            vertices[i*12 + 9] = 20.0f;
-            vertices[i*12 + 10] = 1000.0f;
-            vertices[i*12 + 11] = 0.0f;
-
-            i = 3;
-            vertices[i*12 + 0] = 990.0f;
-            vertices[i*12 + 1] = 1000.0f;
-            vertices[i*12 + 2] = 0.0f;
-            vertices[i*12 + 3] = 990.0f;
-            vertices[i*12 + 4] = 510.0f;
-            vertices[i*12 + 5] = 0.0f;
-            vertices[i*12 + 6] = 1000.0f;
-            vertices[i*12 + 7] = 510.0f;
-            vertices[i*12 + 8] = 0.0f;
-            vertices[i*12 + 9] = 1000.0f;
-            vertices[i*12 + 10] = 1000.0f;
-            vertices[i*12 + 11] = 0.0f;
-        //}
 
         // The indices for all textured quads
         indices = new short[numberOfBorders*6];
@@ -260,5 +251,25 @@ public class GLRenderer implements Renderer {
         drawListBuffer.put(indices);
         drawListBuffer.position(0);
 
+    }
+
+    private void createRectangle(float x1,
+                                 float x2,
+                                 float y1,
+                                 float y2,
+                                 int index)
+    {
+        vertices[index*12 + 0] = offsetx + factor * x1;
+        vertices[index*12 + 1] = offsety + factor * y2;
+        vertices[index*12 + 2] = 0.0f;
+        vertices[index*12 + 3] = offsetx + factor * x1;
+        vertices[index*12 + 4] = offsety + factor * y1;
+        vertices[index*12 + 5] = 0.0f;
+        vertices[index*12 + 6] = offsetx + factor * x2;
+        vertices[index*12 + 7] = offsety + factor * y1;
+        vertices[index*12 + 8] = 0.0f;
+        vertices[index*12 + 9] = offsetx + factor * x2;
+        vertices[index*12 + 10] = offsety + factor * y2;
+        vertices[index*12 + 11] = 0.0f;
     }
 }
