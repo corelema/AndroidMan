@@ -13,4 +13,5 @@ public class AndroidMan extends AbstractEntity {
     {
         super(x, y, 25);
     }
+
 }
