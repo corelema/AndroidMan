@@ -26,6 +26,7 @@ public class GLRenderer implements Renderer {
 
     // Geometric variables
     public static float vertices[];
+    public static float verticesEntities[];
     public static short indices[];
     public FloatBuffer vertexBuffer;
     public ShortBuffer drawListBuffer;
@@ -35,6 +36,7 @@ public class GLRenderer implements Renderer {
 
     // Background variables
     private final int numberOfBorders = 49;
+    private int numberOfElements = 0;
 
     // Our screenresolution
     float   mScreenWidth = 1920;
@@ -253,7 +255,32 @@ public class GLRenderer implements Renderer {
 
     }
 
+    public void createAndroidMan(float x, float y)
+    {
+        createRectangle(x-25, x+25, y-25, y+25, numberOfBorders + (numberOfElements++));
+    }
+
     private void createRectangle(float x1,
+                                 float x2,
+                                 float y1,
+                                 float y2,
+                                 int index)
+    {
+        vertices[index*12 + 0] = offsetx + factor * x1;
+        vertices[index*12 + 1] = offsety + factor * y2;
+        vertices[index*12 + 2] = 0.0f;
+        vertices[index*12 + 3] = offsetx + factor * x1;
+        vertices[index*12 + 4] = offsety + factor * y1;
+        vertices[index*12 + 5] = 0.0f;
+        vertices[index*12 + 6] = offsetx + factor * x2;
+        vertices[index*12 + 7] = offsety + factor * y1;
+        vertices[index*12 + 8] = 0.0f;
+        vertices[index*12 + 9] = offsetx + factor * x2;
+        vertices[index*12 + 10] = offsety + factor * y2;
+        vertices[index*12 + 11] = 0.0f;
+    }
+
+    private void createEntity(float x1,
                                  float x2,
                                  float y1,
                                  float y2,
