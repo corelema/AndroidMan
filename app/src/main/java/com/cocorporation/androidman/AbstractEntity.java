@@ -12,12 +12,12 @@ public class AbstractEntity {
     private Rectangle shape;
 
     public AbstractEntity(float x, float y, float width) {
-        this.hitBox = new Rectangle(x, y, (width-10.0f));
-        this.shape = new Rectangle(x, y, width);
+        this.hitBox = new Rectangle(x, y, (width-10.0f),(width-10.0f) );
+        this.shape = new Rectangle(x, y, width, width);
     }
 
     public AbstractEntity(Rectangle rect) {
-        this.hitBox = new Rectangle(rect.getCenterX(), rect.getCenterY(), (rect.getWidth()-10.0f));
+        this.hitBox = new Rectangle(rect.getCenterX(), rect.getCenterY(), (rect.getWidth()-10.0f), (rect.getWidth()-10.0f));
         this.shape = rect;
     }
 
@@ -29,5 +29,14 @@ public class AbstractEntity {
     public boolean checkHit(Rectangle otherHitBox)
     {
         return hitBox.intersect(otherHitBox);
+    }
+
+    public void moveToPoint(float x, float y)
+    {
+        hitBox.setCenterX(x);
+        hitBox.setCenterY(y);
+
+        shape.setCenterX(x);
+        shape.setCenterY(y);
     }
 }
