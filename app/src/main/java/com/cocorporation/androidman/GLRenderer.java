@@ -57,7 +57,7 @@ public class GLRenderer implements Renderer {
         factor = mScreenHeight/570.0f;
         background = new Background(factor, offsetx, offsety);
         background.createBasicBackground();
-        entityManagement = new EntityManagement(background.getInitPosXAndroidMan(), background.getInitPosYAndroidMan());
+        entityManagement = new EntityManagement(factor, offsetx, offsety, background.getInitPosXAndroidMan(), background.getInitPosYAndroidMan());
     }
 
     public void onPause()

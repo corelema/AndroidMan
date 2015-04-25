@@ -31,17 +31,18 @@ public abstract class AbstractEntity {
     private float vertices[];
 
     public AbstractEntity(float x, float y, float width, float factor, float offsetx, float offsety) {
-        this.hitBox = new Rectangle(x, y, (width-10.0f),(width-10.0f) );
+        this.hitBox = new Rectangle(x, y, width-10.0f, width-10.0f);
         this.shape = new Rectangle(x, y, width, width);
         this.factor = factor;
         this.offsetx = offsetx;
         this.offsety = offsety;
         launchMotion();
+        Log.i(TAG, "Entity created with width = " + width*factor);
     }
 
     public AbstractEntity(Rectangle rect, float factor, float offsetx, float offsety) {
-        this.hitBox = new Rectangle(rect.getCenterX(), rect.getCenterY(), (rect.getWidth()-10.0f), (rect.getWidth()-10.0f));
-        this.shape = rect;
+        this.hitBox = new Rectangle(rect.getCenterX(), rect.getCenterY(), (rect.getWidth()-10.0f)*factor, (rect.getWidth()-10.0f)*factor);
+        this.shape = new Rectangle(rect.getCenterX(), rect.getCenterY(), (rect.getWidth())*factor, (rect.getWidth())*factor);
         launchMotion();
     }
 
@@ -81,6 +82,11 @@ public abstract class AbstractEntity {
         float y1 = shape.getCenterY() - shape.getHeight();
         float y2 = shape.getCenterY() + shape.getHeight();
 
+        Log.i(TAG, "x1 = " + x1);
+        Log.i(TAG, "x2 = " + x2);
+        Log.i(TAG, "y1 = " + y1);
+        Log.i(TAG, "y2 = " + y2);
+
         vertices[0] = offsetx + factor * x1;
         vertices[1] = offsety + factor * y2;
         vertices[2] = 0.0f;
@@ -109,7 +115,7 @@ public abstract class AbstractEntity {
                 {
                     while(true)
                     {
-                        Log.i(TAG, "Speed = " + speed);
+                        //Log.i(TAG, "Speed = " + speed);
                         if (speed != 0.0f)
                         {
                             switch(direction)

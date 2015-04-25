@@ -11,9 +11,9 @@ public class AndroidMan extends AbstractEntity {
         super(0.0f, 0.0f, 25.0f, 1.0f, 0.0f, 0.0f);
     }
 
-    public AndroidMan(float x, float y)
+    public AndroidMan(float posX, float posY, float width, float factor, float offsetx, float offsety)
     {
-        super(x, y, 25.0f, 1.0f, 0.0f, 0.0f);
+        super(posX, posY, width, factor, offsetx, offsety);
     }
 
     public void setGodModeOn()

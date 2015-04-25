@@ -34,8 +34,8 @@ public class Background {
 
     public void createBasicBackground()
     {
-        initPosXAndroidMan = 35.0f * factor + offsetx;
-        initPosYAndroidMan = 215.0f * factor + offsety;
+        initPosXAndroidMan = 35.0f;
+        initPosYAndroidMan = 215.0f;
 
         vertices = new float[numberOfBorders*4*3];
 

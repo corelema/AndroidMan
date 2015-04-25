@@ -19,12 +19,15 @@ public class EntityManagement {
 
     public EntityManagement(){
         listOfGhost = new ArrayList<Ghost>();
-        androidMan = new AndroidMan(200.0f, 200.0f);
+        androidMan = new AndroidMan(200.0f, 200.0f, 25.0f, factor, offsetx, offsety);
     }
 
-    public EntityManagement(float posXAndroidMan, float posYAndroidMan){
+    public EntityManagement(float factor, float offsetx, float offsety, float posXAndroidMan, float posYAndroidMan){
+        this.factor = factor;
+        this.offsetx = offsetx;
+        this.offsety = offsety;
         listOfGhost = new ArrayList<Ghost>();
-        androidMan = new AndroidMan(posXAndroidMan, posYAndroidMan);
+        androidMan = new AndroidMan(posXAndroidMan, posYAndroidMan, 25.0f, factor, offsetx, offsety);
     }
 
     public void addGhost()
