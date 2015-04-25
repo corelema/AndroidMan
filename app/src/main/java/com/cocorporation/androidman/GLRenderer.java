@@ -16,8 +16,11 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
+import android.util.Log;
+import android.view.MotionEvent;
 
 public class GLRenderer implements Renderer {
+    private static final String TAG = "GLRendererDebug";
 
     // Our matrices
     private final float[] mtrxProjection = new float[16];
@@ -32,11 +35,11 @@ public class GLRenderer implements Renderer {
     private static float offsety = 0.0f;
 
     // Background variables
-
     Background background;
 
     // Manage the entities
     EntityManagement entityManagement;
+    int numberOfIndicesToPlot = 0;
 
     // Our screenresolution
     float   mScreenWidth = 1920;
@@ -51,7 +54,9 @@ public class GLRenderer implements Renderer {
     {
         mContext = c;
         mLastTime = System.currentTimeMillis() + 100;
+        factor = mScreenHeight/570.0f;
         background = new Background(factor, offsetx, offsety);
+        background.createBasicBackground();
         entityManagement = new EntityManagement();
     }
 
@@ -79,6 +84,7 @@ public class GLRenderer implements Renderer {
         long elapsed = now - mLastTime;
 
         // Update our example
+        bufferizeObjects();
 
         // Render our example
         Render(mtrxProjectionAndView);
@@ -110,8 +116,8 @@ public class GLRenderer implements Renderer {
         // Apply the projection and view transformation
         GLES20.glUniformMatrix4fv(mtrxhandle, 1, false, m, 0);
 
-        // Draw the background
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, entityManagement.getIndices().length,
+        // Draw the objects
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, numberOfIndicesToPlot,
                 GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
 
         // Disable vertex array
@@ -151,8 +157,8 @@ public class GLRenderer implements Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 
-        // Create the triangle
-        SetupBackground();
+        // Fill the buffers
+        bufferizeObjects();
 
         // Set the clear color to black
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1);
@@ -170,28 +176,84 @@ public class GLRenderer implements Renderer {
         GLES20.glUseProgram(riGraphicTools.sp_SolidColor);
     }
 
-    public void SetupBackground()
+    private void bufferizeObjects()
     {
-
-
-
-
-
-
+        AndroidMan androidMan = entityManagement.getAndroidMan();
 
         // The vertex buffer.
-        ByteBuffer bb = ByteBuffer.allocateDirect(background.getVertices().length * 4);
+        float[] backgroundVertices = background.getVertices();
+        float[] androidManVertices = androidMan.generateVertices();
+        //to do:ghosts
+        ByteBuffer bb = ByteBuffer.allocateDirect((backgroundVertices.length + androidManVertices.length) * 4);
         bb.order(ByteOrder.nativeOrder());
         vertexBuffer = bb.asFloatBuffer();
-        vertexBuffer.put(background.getVertices());
+        vertexBuffer.put(backgroundVertices);
+        vertexBuffer.put(androidManVertices);
         vertexBuffer.position(0);
 
         // initialize byte buffer for the draw list
-        ByteBuffer dlb = ByteBuffer.allocateDirect(background.getIndices().length * 2);
+        short[] backgroundIndices = background.getIndices();
+        short[] androidManIndices = androidMan.getIndices();
+        addOffsetToIndies(androidManIndices, (short)(backgroundIndices.length*4/6));
+        numberOfIndicesToPlot = backgroundIndices.length + androidManIndices.length;
+
+        ByteBuffer dlb = ByteBuffer.allocateDirect(numberOfIndicesToPlot* 2);
         dlb.order(ByteOrder.nativeOrder());
         drawListBuffer = dlb.asShortBuffer();
-        drawListBuffer.put(background.getIndices());
+        drawListBuffer.put(backgroundIndices);
+        drawListBuffer.put(androidManIndices);
         drawListBuffer.position(0);
+    }
 
+    private void addOffsetToIndies(short[] indices, short offset)
+    {
+        if (indices[0]==0)
+        {
+            for (int i=0;i<indices.length;i++)
+            {
+                indices[i]+=offset;
+            }
+        }
+    }
+
+    public void processTouchEvent(MotionEvent event)
+    {
+        int eventAction = event.getAction();
+
+        Log.i(TAG, "event.getX() = " + event.getX());
+        Log.i(TAG, "event.getY() = " + event.getY());
+        Log.i(TAG, "mScreenWidth = " + mScreenWidth);
+        Log.i(TAG, "mScreenHeight = " + mScreenHeight);
+        Log.i(TAG, "--------------------");
+
+        if (eventAction == MotionEvent.ACTION_DOWN || eventAction == MotionEvent.ACTION_MOVE)
+        {
+            Direction direction;
+            if (event.getY()>mScreenHeight*3/4)
+            {
+                // Down screen touch
+                direction = Direction.DOWN;
+            }
+            else if (event.getY()<mScreenHeight/4)
+            {
+                // Up screen touch
+                direction = Direction.UP;
+            }
+            else if(event.getX()<mScreenWidth/2)
+            {
+                // Left screen touch
+                direction = Direction.LEFT;
+            }
+            else
+            {
+                // Right screen touch
+                direction = Direction.RIGHT;
+            }
+            entityManagement.getAndroidMan().move(direction, 2.0f);
+        }
+        else if (eventAction == MotionEvent.ACTION_UP)
+        {
+            entityManagement.getAndroidMan().move(Direction.LEFT, 0.0f);
+        }
     }
 }

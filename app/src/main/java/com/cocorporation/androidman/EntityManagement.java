@@ -14,11 +14,12 @@ public class EntityManagement {
     private float offsety;
 
     private List<Ghost> listOfGhost;
-    AndroidMan androidMan;
+
+    private AndroidMan androidMan;
 
     public EntityManagement(){
         listOfGhost = new ArrayList<Ghost>();
-        androidMan = new AndroidMan();
+        androidMan = new AndroidMan(200.0f, 200.0f);
     }
 
     public void addGhost()
@@ -33,5 +34,14 @@ public class EntityManagement {
 
     public short[] getIndices() {
         return indices;
+    }
+
+    public AndroidMan getAndroidMan() {
+        return androidMan;
+    }
+
+    public void moveAndroidMan(Direction direction)
+    {
+
     }
 }

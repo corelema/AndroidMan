@@ -10,13 +10,13 @@ public class Ghost extends AbstractEntity {
 
     public Ghost()
     {
-        super(0, 0, 25);
+        super(0.0f, 0.0f, 25.0f, 1.0f, 0.0f, 0.0f);
         color=Color.RED;
     }
 
     public Ghost(float x, float y)
     {
-        super(x, y, 25);
+        super(x, y, 25.0f, 1.0f, 0.0f, 0.0f);
         color=Color.RED;
     }
 

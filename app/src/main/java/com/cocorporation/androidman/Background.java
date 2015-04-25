@@ -8,11 +8,15 @@ import java.util.List;
  */
 public class Background {
     // Geometric variables
-    private static float vertices[];
-    private static short indices[];
-    private static float factor;
-    private static float offsetx;
-    private static float offsety;
+    private float vertices[];
+    private short indices[];
+    private float factor;
+    private float offsetx;
+    private float offsety;
+
+    // Initial position for AndroidMan, depends on which background is implemented
+    private float initPosXAndroidMan;
+    private float initPosYAndroidMan;
 
     private final int numberOfBorders = 49;
 
@@ -120,11 +124,11 @@ public class Background {
         vertices[index*12 + 11] = 0.0f;
     }
 
-    public static float[] getVertices() {
+    public float[] getVertices() {
         return vertices;
     }
 
-    public static short[] getIndices() {
+    public short[] getIndices() {
         return indices;
     }
 
