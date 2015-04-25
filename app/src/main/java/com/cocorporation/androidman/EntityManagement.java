@@ -22,6 +22,11 @@ public class EntityManagement {
         androidMan = new AndroidMan(200.0f, 200.0f);
     }
 
+    public EntityManagement(float posXAndroidMan, float posYAndroidMan){
+        listOfGhost = new ArrayList<Ghost>();
+        androidMan = new AndroidMan(posXAndroidMan, posYAndroidMan);
+    }
+
     public void addGhost()
     {
         listOfGhost.add(new Ghost());

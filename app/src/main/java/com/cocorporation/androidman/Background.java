@@ -16,6 +16,7 @@ public class Background {
 
     // Initial position for AndroidMan, depends on which background is implemented
     private float initPosXAndroidMan;
+
     private float initPosYAndroidMan;
 
     private final int numberOfBorders = 49;
@@ -33,6 +34,9 @@ public class Background {
 
     public void createBasicBackground()
     {
+        initPosXAndroidMan = 35.0f * factor + offsetx;
+        initPosYAndroidMan = 215.0f * factor + offsety;
+
         vertices = new float[numberOfBorders*4*3];
 
         createRectangle(0,120,360,370,0);
@@ -132,4 +136,11 @@ public class Background {
         return indices;
     }
 
+    public float getInitPosXAndroidMan() {
+        return initPosXAndroidMan;
+    }
+
+    public float getInitPosYAndroidMan() {
+        return initPosYAndroidMan;
+    }
 }
