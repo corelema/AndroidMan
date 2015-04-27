@@ -36,14 +36,12 @@ public abstract class AbstractEntity {
         this.factor = factor;
         this.offsetx = offsetx;
         this.offsety = offsety;
-        launchMotion();
-        Log.i(TAG, "Entity created with width = " + width*factor);
+        Log.i(TAG, "Entity created with width = " + width * factor);
     }
 
     public AbstractEntity(Rectangle rect, float factor, float offsetx, float offsety) {
         this.hitBox = new Rectangle(rect.getCenterX(), rect.getCenterY(), (rect.getWidth()-10.0f)*factor, (rect.getWidth()-10.0f)*factor);
         this.shape = new Rectangle(rect.getCenterX(), rect.getCenterY(), (rect.getWidth())*factor, (rect.getWidth())*factor);
-        launchMotion();
     }
 
     public boolean checkCollision(Rectangle otherHitBox)
@@ -107,52 +105,23 @@ public abstract class AbstractEntity {
         return indices;
     }
 
-    private void launchMotion()
-    {
-        Thread motionThread = new Thread(){
-            public void run(){
-                try
-                {
-                    while(true)
-                    {
-                        //Log.i(TAG, "Speed = " + speed);
-                        if (speed != 0.0f)
-                        {
-                            switch(direction)
-                            {
-                                case UP:
-                                    moveToPoint(shape.getCenterX(), shape.getCenterY() + speed);
-                                    break;
-                                case DOWN:
-                                    moveToPoint(shape.getCenterX(), shape.getCenterY() - speed);
-                                    break;
-                                case LEFT:
-                                    moveToPoint(shape.getCenterX() - speed, shape.getCenterY());
-                                    break;
-                                case RIGHT:
-                                    moveToPoint(shape.getCenterX() + speed, shape.getCenterY());
-                                    break;
-                            }
-                        }
-                        Thread.sleep(10);
-                    }
-                }
-                catch(Throwable t)
-                {
-
-                }
-                finally
-                {
-
-                }
-            }
-        };
-        motionThread.start();
-    }
-
-    public void move(Direction direction, float speed)
+    public void setMoveParameters(Direction direction, float speed)
     {
         this.direction = direction;
         this.speed = speed;
+    }
+
+    public void stopMoving()
+    {
+        this.direction = Direction.LEFT;
+        this.speed = 0.0f;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public float getSpeed() {
+        return speed;
     }
 }

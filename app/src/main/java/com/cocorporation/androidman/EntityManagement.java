@@ -12,6 +12,7 @@ public class EntityManagement {
     private float factor;
     private float offsetx;
     private float offsety;
+    private Mover mover;
 
     private List<Ghost> listOfGhost;
 
@@ -22,12 +23,15 @@ public class EntityManagement {
         androidMan = new AndroidMan(200.0f, 200.0f, 25.0f, factor, offsetx, offsety);
     }
 
-    public EntityManagement(float factor, float offsetx, float offsety, float posXAndroidMan, float posYAndroidMan){
+    public EntityManagement(float factor, float offsetx, float offsety, Background background){
         this.factor = factor;
         this.offsetx = offsetx;
         this.offsety = offsety;
         listOfGhost = new ArrayList<Ghost>();
-        androidMan = new AndroidMan(posXAndroidMan, posYAndroidMan, 25.0f, factor, offsetx, offsety);
+        androidMan = new AndroidMan(background.getInitPosXAndroidMan(), background.getInitPosYAndroidMan(), 25.0f, factor, offsetx, offsety);
+        mover = new Mover(background);
+        mover.addMovingEntity(androidMan);
+        mover.launchMovement();
     }
 
     public void addGhost()

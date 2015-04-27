@@ -112,19 +112,23 @@ public class Background {
                                  float y2,
                                  int index)
     {
-        rectangleList.add(new Rectangle((x1+x2)/2, (y1+y2)/2, x2-x1, y2-y1));
+        float scaledX1 = offsetx + factor * x1;
+        float scaledX2 = offsetx + factor * x2;
+        float scaledY1 = offsety + factor * y1;
+        float scaledY2 = offsety + factor * y2;
+        rectangleList.add(new Rectangle((scaledX1+scaledX2)/2, (scaledY1+scaledY2)/2, scaledX2-scaledX1, scaledY2-scaledY1));
 
-        vertices[index*12 + 0] = offsetx + factor * x1;
-        vertices[index*12 + 1] = offsety + factor * y2;
+        vertices[index*12 + 0] = scaledX1;
+        vertices[index*12 + 1] = scaledY2;
         vertices[index*12 + 2] = 0.0f;
-        vertices[index*12 + 3] = offsetx + factor * x1;
-        vertices[index*12 + 4] = offsety + factor * y1;
+        vertices[index*12 + 3] = scaledX1;
+        vertices[index*12 + 4] = scaledY1;
         vertices[index*12 + 5] = 0.0f;
-        vertices[index*12 + 6] = offsetx + factor * x2;
-        vertices[index*12 + 7] = offsety + factor * y1;
+        vertices[index*12 + 6] = scaledX2;
+        vertices[index*12 + 7] = scaledY1;
         vertices[index*12 + 8] = 0.0f;
-        vertices[index*12 + 9] = offsetx + factor * x2;
-        vertices[index*12 + 10] = offsety + factor * y2;
+        vertices[index*12 + 9] = scaledX2;
+        vertices[index*12 + 10] = scaledY2;
         vertices[index*12 + 11] = 0.0f;
     }
 

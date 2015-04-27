@@ -57,7 +57,7 @@ public class GLRenderer implements Renderer {
         factor = mScreenHeight/570.0f;
         background = new Background(factor, offsetx, offsety);
         background.createBasicBackground();
-        entityManagement = new EntityManagement(factor, offsetx, offsety, background.getInitPosXAndroidMan(), background.getInitPosYAndroidMan());
+        entityManagement = new EntityManagement(factor, offsetx, offsety, background);
     }
 
     public void onPause()
@@ -249,11 +249,11 @@ public class GLRenderer implements Renderer {
                 // Right screen touch
                 direction = Direction.RIGHT;
             }
-            entityManagement.getAndroidMan().move(direction, 2.0f);
+            entityManagement.getAndroidMan().setMoveParameters(direction, 2.0f);
         }
         else if (eventAction == MotionEvent.ACTION_UP)
         {
-            entityManagement.getAndroidMan().move(Direction.LEFT, 0.0f);
+            entityManagement.getAndroidMan().stopMoving();
         }
     }
 }
