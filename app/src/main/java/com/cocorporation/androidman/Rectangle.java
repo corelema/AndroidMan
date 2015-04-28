@@ -21,6 +21,14 @@ public class Rectangle {
         this.height = height;
     }
 
+    public Rectangle(float x1,float x2, float y1, float y2, float inutile)
+    {
+        this.centerX = (x1+x2)/2;
+        this.centerY = (y1+y2)/2;
+        this.width = (x2-x1)/2;
+        this.height = (y2-y1)/2;
+    }
+
     public boolean intersect(Rectangle rect)
     {
         if (abs(centerX, rect.getCenterX())<width+rect.getWidth()
@@ -57,6 +65,26 @@ public class Rectangle {
 
     public void setCenterY(float centerY) {
         this.centerY = centerY;
+    }
+
+    public float getX1()
+    {
+        return centerX - width;
+    }
+
+    public float getX2()
+    {
+        return centerX + width;
+    }
+
+    public float getY1()
+    {
+        return centerY - height;
+    }
+
+    public float getY2()
+    {
+        return centerY  + height;
     }
 
     public void setCenterX(float centerX) {

@@ -68,14 +68,14 @@ public class Background {
         createRectangle(230,340,480,490,26);
         createRectangle(450,510,480,490,27);
         createRectangle(170,180,360,490,28);
-        createRectangle(280,290,430,480,29);
+        createRectangle(280,290,420,480,29);
         createRectangle(390,400,360,490,30);
         createRectangle(180,230,420,430,31);
         createRectangle(340,390,420,430,32);
         createRectangle(170,180,240,310,33);
         createRectangle(390,400,240,310,34);
         createRectangle(230,340,240,250,35);
-        createRectangle(280,290,170,240,36);
+        createRectangle(280,290,180,240,36);
         createRectangle(60,120,180,190,37);
         createRectangle(170,230,180,190,38);
         createRectangle(340,400,180,190,39);
@@ -84,8 +84,8 @@ public class Background {
         createRectangle(450,460,120,180,42);
         createRectangle(10,60,120,130,43);
         createRectangle(510,560,120,130,44);
-        createRectangle(170,180,70,120,45);
-        createRectangle(390,400,70,120,46);
+        createRectangle(170,180,70,130,45);
+        createRectangle(390,400,70,130,46);
         createRectangle(60,230,60,70,47);
         createRectangle(340,510,60,70,48);
 
