@@ -1,10 +1,12 @@
 package com.cocorporation.androidman;
 
+import android.util.Log;
+
 /**
  * Created by Corentin on 4/19/2015.
  */
 public class Rectangle {
-
+    private static final String TAG = "Rectangle";
 
     private float centerX;
     private float centerY;
@@ -23,7 +25,12 @@ public class Rectangle {
     {
         if (abs(centerX, rect.getCenterX())<width+rect.getWidth()
                 && abs(centerY, rect.getCenterY())<height+rect.getHeight())
+        {
+            Log.i(TAG, "Intersection between those two rectangles:");
+            Log.i(TAG, "Rect1: x1 + " + (centerX - width) + " x2 = " + (centerX + width) + " y1 = " + (centerY - height) + " y2 = " + (centerY + height));
+            Log.i(TAG, "Rect2: x1 + " + (rect.getCenterX() - rect.getWidth()) + " x2 = " + (rect.getCenterX() + rect.getWidth()) + " y1 = " + (rect.getCenterY() - rect.getHeight()) + " y2 = " + (rect.getCenterY() + rect.getHeight()));
             return true;
+        }
         return false;
     }
 

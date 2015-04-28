@@ -28,7 +28,7 @@ public class EntityManagement {
         this.offsetx = offsetx;
         this.offsety = offsety;
         listOfGhost = new ArrayList<Ghost>();
-        androidMan = new AndroidMan(background.getInitPosXAndroidMan(), background.getInitPosYAndroidMan(), 25.0f, factor, offsetx, offsety);
+        androidMan = new AndroidMan(background.getInitPosXAndroidMan(), background.getInitPosYAndroidMan(), (float)((int)(25.0f * factor)), factor, offsetx, offsety);
         mover = new Mover(background);
         mover.addMovingEntity(androidMan);
         mover.launchMovement();

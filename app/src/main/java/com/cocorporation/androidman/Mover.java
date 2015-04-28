@@ -1,5 +1,8 @@
 package com.cocorporation.androidman;
 
+import android.graphics.Rect;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,12 +10,14 @@ import java.util.List;
  * Created by Corentin on 4/26/2015.
  */
 public class Mover {
-    private Background background;
+    private static final String TAG = "Mover";
+
+    private List<Rectangle> backgroundRectangles;
     private List<AbstractEntity> movingEntities;
 
     public Mover(Background background)
     {
-        this.background = background;
+        this.backgroundRectangles = background.getRectangleList();
         movingEntities = new ArrayList<AbstractEntity>();
     }
 
@@ -39,18 +44,43 @@ public class Mover {
                             float speed = entity.getSpeed();
                             Direction direction = entity.getDirection();
                             if (speed != 0.0f) {
+                                Rectangle newPosition;
                                 switch (direction) {
                                     case UP:
-                                        entity.moveToPoint(entity.getShape().getCenterX(), entity.getShape().getCenterY() + speed);
+                                        newPosition = new Rectangle(
+                                                entity.getShape().getCenterX(),
+                                                entity.getShape().getCenterY() + speed,
+                                                entity.getShape().getWidth(),
+                                                entity.getShape().getHeight());
+                                        if (!collisionWithBackground(newPosition))
+                                            entity.moveToPoint(newPosition);
                                         break;
                                     case DOWN:
-                                        entity.moveToPoint(entity.getShape().getCenterX(), entity.getShape().getCenterY() - speed);
+                                        newPosition = new Rectangle(
+                                                entity.getShape().getCenterX(),
+                                                entity.getShape().getCenterY() - speed,
+                                                entity.getShape().getWidth(),
+                                                entity.getShape().getHeight());
+                                        if (!collisionWithBackground(newPosition))
+                                            entity.moveToPoint(newPosition);
                                         break;
                                     case LEFT:
-                                        entity.moveToPoint(entity.getShape().getCenterX() - speed, entity.getShape().getCenterY());
+                                        newPosition = new Rectangle(
+                                                entity.getShape().getCenterX() - speed,
+                                                entity.getShape().getCenterY(),
+                                                entity.getShape().getWidth(),
+                                                entity.getShape().getHeight());
+                                        if (!collisionWithBackground(newPosition))
+                                            entity.moveToPoint(newPosition);
                                         break;
                                     case RIGHT:
-                                        entity.moveToPoint(entity.getShape().getCenterX() + speed, entity.getShape().getCenterY());
+                                        newPosition = new Rectangle(
+                                                entity.getShape().getCenterX() + speed,
+                                                entity.getShape().getCenterY(),
+                                                entity.getShape().getWidth(),
+                                                entity.getShape().getHeight());
+                                        if (!collisionWithBackground(newPosition))
+                                            entity.moveToPoint(newPosition);
                                         break;
                                 }
                             }
@@ -69,6 +99,19 @@ public class Mover {
             }
         };
         motionThread.start();
+    }
+
+    private boolean collisionWithBackground(Rectangle newPosition)
+    {
+        for (Rectangle rec : backgroundRectangles)
+        {
+            if (newPosition.intersect(rec))
+            {
+                Log.i(TAG, "Intersect with rectangle number " + backgroundRectangles.indexOf(rec));
+                return true;
+            }
+        }
+        return false;
     }
 
     public void slowMotionForGhosts()

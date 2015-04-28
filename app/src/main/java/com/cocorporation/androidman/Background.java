@@ -34,8 +34,8 @@ public class Background {
 
     public void createBasicBackground()
     {
-        initPosXAndroidMan = 35.0f;
-        initPosYAndroidMan = 215.0f;
+        initPosXAndroidMan = offsetx + factor * 35.0f;
+        initPosYAndroidMan = offsety + factor * 215.0f;
 
         vertices = new float[numberOfBorders*4*3];
 
@@ -116,7 +116,7 @@ public class Background {
         float scaledX2 = offsetx + factor * x2;
         float scaledY1 = offsety + factor * y1;
         float scaledY2 = offsety + factor * y2;
-        rectangleList.add(new Rectangle((scaledX1+scaledX2)/2, (scaledY1+scaledY2)/2, scaledX2-scaledX1, scaledY2-scaledY1));
+        rectangleList.add(new Rectangle((scaledX1+scaledX2)/2, (scaledY1+scaledY2)/2, (scaledX2-scaledX1)/2, (scaledY2-scaledY1)/2));
 
         vertices[index*12 + 0] = scaledX1;
         vertices[index*12 + 1] = scaledY2;
@@ -146,5 +146,9 @@ public class Background {
 
     public float getInitPosYAndroidMan() {
         return initPosYAndroidMan;
+    }
+
+    public List<Rectangle> getRectangleList() {
+        return rectangleList;
     }
 }

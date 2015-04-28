@@ -63,6 +63,15 @@ public abstract class AbstractEntity {
         shape.setCenterY(y);
     }
 
+    public void moveToPoint(Rectangle newPosition)
+    {
+        hitBox.setCenterX(newPosition.getCenterX());
+        hitBox.setCenterY(newPosition.getCenterY());
+
+        shape.setCenterX(newPosition.getCenterX());
+        shape.setCenterY(newPosition.getCenterY());
+    }
+
     public Rectangle getHitBox() {
         return hitBox;
     }
@@ -85,17 +94,17 @@ public abstract class AbstractEntity {
         Log.i(TAG, "y1 = " + y1);
         Log.i(TAG, "y2 = " + y2);
 
-        vertices[0] = offsetx + factor * x1;
-        vertices[1] = offsety + factor * y2;
+        vertices[0] = x1;
+        vertices[1] = y2;
         vertices[2] = 0.0f;
-        vertices[3] = offsetx + factor * x1;
-        vertices[4] = offsety + factor * y1;
+        vertices[3] = x1;
+        vertices[4] = y1;
         vertices[5] = 0.0f;
-        vertices[6] = offsetx + factor * x2;
-        vertices[7] = offsety + factor * y1;
+        vertices[6] = x2;
+        vertices[7] = y1;
         vertices[8] = 0.0f;
-        vertices[9] = offsetx + factor * x2;
-        vertices[10] = offsety + factor * y2;
+        vertices[9] = x2;
+        vertices[10] = y2;
         vertices[11] = 0.0f;
 
         return vertices;
