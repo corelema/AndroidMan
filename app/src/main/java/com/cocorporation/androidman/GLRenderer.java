@@ -249,7 +249,7 @@ public class GLRenderer implements Renderer {
                 // Right screen touch
                 direction = Direction.RIGHT;
             }
-            entityManagement.getAndroidMan().setMoveParameters(direction, 4.0f);
+            entityManagement.getAndroidMan().setMoveParameters(direction, 2.0f);
         }
         else if (eventAction == MotionEvent.ACTION_UP)
         {
