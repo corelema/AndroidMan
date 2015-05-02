@@ -88,19 +88,11 @@ public class GLRenderer implements Renderer {
         // Get the amount of time the last frame took.
         long elapsed = now - mLastTime;
 
-        // Prepare rendering
-        prepareRender();
+        // clear Screen and Depth Buffer, we have set the clear color as black.
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
         // Bufferize Background
         bufferizeBackground();
-
-        int vertexShader = riGraphicTools.loadShader(GLES20.GL_VERTEX_SHADER, riGraphicTools.vs_SolidColor);
-        int fragmentShader = riGraphicTools.loadShader(GLES20.GL_FRAGMENT_SHADER, riGraphicTools.fs_SolidColor);
-
-        riGraphicTools.sp_SolidColor = GLES20.glCreateProgram();             // create empty OpenGL ES Program
-        GLES20.glAttachShader(riGraphicTools.sp_SolidColor, vertexShader);   // add the vertex shader to program
-        GLES20.glAttachShader(riGraphicTools.sp_SolidColor, fragmentShader); // add the fragment shader to program
-        GLES20.glLinkProgram(riGraphicTools.sp_SolidColor);                  // creates OpenGL ES program executables
 
         // Set our shader programm
         GLES20.glUseProgram(riGraphicTools.sp_SolidColor);
@@ -111,28 +103,6 @@ public class GLRenderer implements Renderer {
         // Bufferize AndroidMan
         bufferizeAndroidMan();
 
-        // Create the shaders, solid color
-        int vertexShader2 = riGraphicTools.loadShader(GLES20.GL_VERTEX_SHADER,
-                riGraphicTools.vs_SolidColor);
-        int fragmentShader2 = riGraphicTools.loadShader(GLES20.GL_FRAGMENT_SHADER,
-                riGraphicTools.fs_SolidColor);
-
-        riGraphicTools.sp_SolidColor = GLES20.glCreateProgram();
-        GLES20.glAttachShader(riGraphicTools.sp_SolidColor, vertexShader2);
-        GLES20.glAttachShader(riGraphicTools.sp_SolidColor, fragmentShader2);
-        GLES20.glLinkProgram(riGraphicTools.sp_SolidColor);
-
-        // Create the shaders, images
-        vertexShader2 = riGraphicTools.loadShader(GLES20.GL_VERTEX_SHADER,
-                riGraphicTools.vs_Image);
-        fragmentShader2 = riGraphicTools.loadShader(GLES20.GL_FRAGMENT_SHADER,
-                riGraphicTools.fs_Image);
-
-        riGraphicTools.sp_Image = GLES20.glCreateProgram();
-        GLES20.glAttachShader(riGraphicTools.sp_Image, vertexShader2);
-        GLES20.glAttachShader(riGraphicTools.sp_Image, fragmentShader2);
-        GLES20.glLinkProgram(riGraphicTools.sp_Image);
-
         // Set our shader programm
         GLES20.glUseProgram(riGraphicTools.sp_Image);
 
@@ -142,12 +112,6 @@ public class GLRenderer implements Renderer {
         // Save the current time to see how long it took <img class="wp-smiley" alt=":)" src="http://androidblog.reindustries.com/wp-includes/images/smilies/icon_smile.gif"> .
         mLastTime = now;
 
-    }
-
-    private void prepareRender()
-    {
-        // clear Screen and Depth Buffer, we have set the clear color as black.
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
     }
 
     private void renderBackground(float[] m)
@@ -257,18 +221,13 @@ public class GLRenderer implements Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-
-        // Fill the buffers
-        bufferizeBackground(); // Is it necessary?
-        bufferizeAndroidMan();
-
         //Create the AndroidMan information
         setupImage();
 
         // Set the clear color to black
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1);
-/**/
-        // Create the shaders
+
+        // Create the solid shaders
         int vertexShader = riGraphicTools.loadShader(GLES20.GL_VERTEX_SHADER, riGraphicTools.vs_SolidColor);
         int fragmentShader = riGraphicTools.loadShader(GLES20.GL_FRAGMENT_SHADER, riGraphicTools.fs_SolidColor);
 
@@ -277,36 +236,28 @@ public class GLRenderer implements Renderer {
         GLES20.glAttachShader(riGraphicTools.sp_SolidColor, fragmentShader); // add the fragment shader to program
         GLES20.glLinkProgram(riGraphicTools.sp_SolidColor);                  // creates OpenGL ES program executables
 
-        // Set our shader programm
-        GLES20.glUseProgram(riGraphicTools.sp_SolidColor);
-/**/
-/*
-        // Create the shaders, solid color
-        int vertexShader2 = riGraphicTools.loadShader(GLES20.GL_VERTEX_SHADER,
+        // Create the image shaders
+        vertexShader = riGraphicTools.loadShader(GLES20.GL_VERTEX_SHADER,
                 riGraphicTools.vs_SolidColor);
-        int fragmentShader2 = riGraphicTools.loadShader(GLES20.GL_FRAGMENT_SHADER,
+        fragmentShader = riGraphicTools.loadShader(GLES20.GL_FRAGMENT_SHADER,
                 riGraphicTools.fs_SolidColor);
 
         riGraphicTools.sp_SolidColor = GLES20.glCreateProgram();
-        GLES20.glAttachShader(riGraphicTools.sp_SolidColor, vertexShader2);
-        GLES20.glAttachShader(riGraphicTools.sp_SolidColor, fragmentShader2);
+        GLES20.glAttachShader(riGraphicTools.sp_SolidColor, vertexShader);
+        GLES20.glAttachShader(riGraphicTools.sp_SolidColor, fragmentShader);
         GLES20.glLinkProgram(riGraphicTools.sp_SolidColor);
 
         // Create the shaders, images
-        vertexShader2 = riGraphicTools.loadShader(GLES20.GL_VERTEX_SHADER,
+        vertexShader = riGraphicTools.loadShader(GLES20.GL_VERTEX_SHADER,
                 riGraphicTools.vs_Image);
-        fragmentShader2 = riGraphicTools.loadShader(GLES20.GL_FRAGMENT_SHADER,
+        fragmentShader = riGraphicTools.loadShader(GLES20.GL_FRAGMENT_SHADER,
                 riGraphicTools.fs_Image);
 
         riGraphicTools.sp_Image = GLES20.glCreateProgram();
-        GLES20.glAttachShader(riGraphicTools.sp_Image, vertexShader2);
-        GLES20.glAttachShader(riGraphicTools.sp_Image, fragmentShader2);
+        GLES20.glAttachShader(riGraphicTools.sp_Image, vertexShader);
+        GLES20.glAttachShader(riGraphicTools.sp_Image, fragmentShader);
         GLES20.glLinkProgram(riGraphicTools.sp_Image);
 
-        // Set our shader programm
-        GLES20.glUseProgram(riGraphicTools.sp_Image);
-
-        */
     }
 
     public void setupImage()
