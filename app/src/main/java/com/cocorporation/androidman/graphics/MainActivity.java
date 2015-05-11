@@ -1,4 +1,4 @@
-package com.cocorporation.androidman;
+package com.cocorporation.androidman.graphics;
 
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
+
+import com.cocorporation.androidman.R;
 
 public class MainActivity extends Activity {
 

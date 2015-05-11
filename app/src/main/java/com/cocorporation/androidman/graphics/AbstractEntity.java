@@ -1,10 +1,9 @@
-package com.cocorporation.androidman;
+package com.cocorporation.androidman.graphics;
 
 /**
  * Created by Corentin on 4/19/2015.
  */
 
-import android.graphics.Rect;
 import android.util.Log;
 
 public abstract class AbstractEntity {

@@ -1,4 +1,4 @@
-package com.cocorporation.androidman;
+package com.cocorporation.androidman.graphics;
 
 /**
  * Created by Corentin on 4/18/2015.
@@ -6,7 +6,6 @@ package com.cocorporation.androidman;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
-import android.view.View;
 
 public class GLSurf extends GLSurfaceView {
 

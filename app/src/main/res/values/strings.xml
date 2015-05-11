@@ -3,4 +3,10 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="menu_level_title">Level selection</string>>
+    <string name="level_title_label">Level</string>>
+    <string name="level_title_hint">Write level title here</string>>
+    <string name="level_details_label">Details</string>>
+    <string name="level_passed_label">Level completed</string>
+    <string name="title_activity_connection_test">ConnectionTestActivity</string>>
 </resources>
