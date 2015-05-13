@@ -10,6 +10,8 @@ public class Background {
     // Geometric variables
     private float vertices[];
     private short indices[];
+    private float verticesApples[];
+    private short indicesApples[];
     private float factor;
     private float offsetx;
     private float offsety;
@@ -20,13 +22,16 @@ public class Background {
     private float initPosYAndroidMan;
 
     private final int numberOfBorders = 49;
+    private int numberOfApples = 2;
 
     // List of rectangles making the board
     private List<Rectangle> rectangleList;
+    private List<Rectangle> appleList;
 
     public Background(float factor, float offsetx, float offsety)
     {
         rectangleList = new ArrayList<Rectangle>();
+        appleList = new ArrayList<Rectangle>();
         this.factor = factor;
         this.offsetx = offsetx;
         this.offsety = offsety;
@@ -38,6 +43,7 @@ public class Background {
         initPosYAndroidMan = offsety + factor * 215.0f;
 
         vertices = new float[numberOfBorders*4*3];
+        verticesApples = new float[numberOfApples*4*3];
 
         createRectangle(0,120,360,370,0);
         createRectangle(110,120,370,420,1);
@@ -86,8 +92,13 @@ public class Background {
         createRectangle(510,560,120,130,44);
         createRectangle(170,180,70,130,45);
         createRectangle(390,400,70,130,46);
-        createRectangle(60,230,60,70,47);
+        createRectangle(60, 230, 60, 70,47);
         createRectangle(340,510,60,70,48);
+
+        //TODO need to create the vertex only when all the rectangles are created, so that I can use a dynamic number
+        createApple(20, 50, 20, 50, 0);
+        createApple(80, 110, 20, 50, 1);
+
 
         // The indices for all textured quads
         indices = new short[numberOfBorders*6];
@@ -101,6 +112,20 @@ public class Background {
             indices[(j*6) + 3] = (short) (last + 0);
             indices[(j*6) + 4] = (short) (last + 2);
             indices[(j*6) + 5] = (short) (last + 3);
+
+            last = last + 4;
+        }
+        indicesApples = new short[numberOfApples*6];
+        last = 0;
+        for(int j=0;j<numberOfApples;j++)
+        {
+            // We need to set the new indices for the new quad
+            indicesApples[(j*6) + 0] = (short) (last + 0);
+            indicesApples[(j*6) + 1] = (short) (last + 1);
+            indicesApples[(j*6) + 2] = (short) (last + 2);
+            indicesApples[(j*6) + 3] = (short) (last + 0);
+            indicesApples[(j*6) + 4] = (short) (last + 2);
+            indicesApples[(j*6) + 5] = (short) (last + 3);
 
             last = last + 4;
         }
@@ -132,12 +157,46 @@ public class Background {
         vertices[index*12 + 11] = 0.0f;
     }
 
+    private void createApple(float x1,
+                                 float x2,
+                                 float y1,
+                                 float y2,
+                                 int index)
+    {
+        float scaledX1 = offsetx + factor * x1;
+        float scaledX2 = offsetx + factor * x2;
+        float scaledY1 = offsety + factor * y1;
+        float scaledY2 = offsety + factor * y2;
+        appleList.add(new Rectangle((scaledX1+scaledX2)/2, (scaledY1+scaledY2)/2, (scaledX2-scaledX1)/2, (scaledY2-scaledY1)/2));
+
+        verticesApples[index*12 + 0] = scaledX1;
+        verticesApples[index*12 + 1] = scaledY2;
+        verticesApples[index*12 + 2] = 0.0f;
+        verticesApples[index*12 + 3] = scaledX1;
+        verticesApples[index*12 + 4] = scaledY1;
+        verticesApples[index*12 + 5] = 0.0f;
+        verticesApples[index*12 + 6] = scaledX2;
+        verticesApples[index*12 + 7] = scaledY1;
+        verticesApples[index*12 + 8] = 0.0f;
+        verticesApples[index*12 + 9] = scaledX2;
+        verticesApples[index*12 + 10] = scaledY2;
+        verticesApples[index*12 + 11] = 0.0f;
+    }
+
     public float[] getVertices() {
         return vertices;
     }
 
+    public float[] getVerticesApples() {
+        return verticesApples;
+    }
+
     public short[] getIndices() {
         return indices;
+    }
+
+    public short[] getIndicesApples() {
+        return indicesApples;
     }
 
     public float getInitPosXAndroidMan() {
@@ -150,5 +209,9 @@ public class Background {
 
     public List<Rectangle> getRectangleList() {
         return rectangleList;
+    }
+
+    public List<Rectangle> getAppleList() {
+        return appleList;
     }
 }

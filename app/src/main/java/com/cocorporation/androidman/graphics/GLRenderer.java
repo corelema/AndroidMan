@@ -109,6 +109,12 @@ public class GLRenderer implements Renderer {
         // Render AndroidMan
         renderAndroidMan(mtrxProjectionAndView);
 
+        // Bufferize Apples
+        bufferizeApples();
+
+        // Render Apples
+        renderApples(mtrxProjectionAndView);
+
         // Save the current time to see how long it took <img class="wp-smiley" alt=":)" src="http://androidblog.reindustries.com/wp-includes/images/smilies/icon_smile.gif"> .
         mLastTime = now;
 
@@ -179,9 +185,60 @@ public class GLRenderer implements Renderer {
                 "s_texture" );
 
         // Set the sampler texture unit to 0, where we have saved the texture.
-        GLES20.glUniform1i ( mSamplerLoc, 0);
+        GLES20.glUniform1i ( mSamplerLoc, 0); //TODO CAN BE DONE ONLY ONCE NO?
 
         // Draw AndroidMan
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, numberOfIndicesToPlot,
+                GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+
+        // Disable vertex array
+        GLES20.glDisableVertexAttribArray(mPositionHandle);
+        GLES20.glDisableVertexAttribArray(mTexCoordLoc);
+    }
+
+    private void renderApples(float[] m)
+    {
+        // get handle to vertex shader's vPosition member
+        int mPositionHandle =
+                GLES20.glGetAttribLocation(riGraphicTools.sp_Image, "vPosition");
+
+        // Enable generic vertex attribute array
+        GLES20.glEnableVertexAttribArray(mPositionHandle);
+
+        // Prepare the triangle coordinate data
+        GLES20.glVertexAttribPointer(mPositionHandle, 3,
+                GLES20.GL_FLOAT, false,
+                0, vertexBuffer);
+
+        // Get handle to texture coordinates location
+        int mTexCoordLoc = GLES20.glGetAttribLocation(riGraphicTools.sp_Image,
+                "a_texCoord" );
+
+        // Enable generic vertex attribute array
+        GLES20.glEnableVertexAttribArray ( mTexCoordLoc );
+
+        // Prepare the texturecoordinates
+        GLES20.glVertexAttribPointer ( mTexCoordLoc, 2, GLES20.GL_FLOAT,
+                false,
+                0, uvBuffer);
+
+        // Get handle to shape's transformation matrix
+        int mtrxhandle = GLES20.glGetUniformLocation(riGraphicTools.sp_Image,
+                "uMVPMatrix");
+
+        // Apply the projection and view transformation
+        GLES20.glUniformMatrix4fv(mtrxhandle, 1, false, m, 0);
+
+        // Get handle to textures locations
+        int mSamplerLoc = GLES20.glGetUniformLocation (riGraphicTools.sp_Image,
+                "s_texture" );
+
+        // Set the sampler texture unit to 1, where we have saved the texture.
+        GLES20.glUniform1i ( mSamplerLoc, 1); //TODO need to see if I can just do it once at the setup
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE1); //TODO need to see why I don't need to call it with 0
+
+        // Draw Apples
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, numberOfIndicesToPlot,
                 GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
 
@@ -223,6 +280,7 @@ public class GLRenderer implements Renderer {
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         //Create the AndroidMan information
         setupImage();
+        //setupApple();
 
         // Set the clear color to black
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1);
@@ -267,7 +325,11 @@ public class GLRenderer implements Renderer {
                 0.0f, 0.0f,
                 0.0f, 1.0f,
                 1.0f, 1.0f,
-                1.0f, 0.0f
+                1.0f, 0.0f,
+                0.0f, 0.0f,
+                0.0f, 1.0f,
+                1.0f, 1.0f,
+                1.0f, 0.0f//TODO need to make a bigger table or to see if can do another way
         };
 
         // The texture buffer
@@ -278,19 +340,23 @@ public class GLRenderer implements Renderer {
         uvBuffer.position(0);
 
         // Generate Textures, if more needed, alter these numbers.
-        int[] texturenames = new int[1];
-        GLES20.glGenTextures(1, texturenames, 0);
+        int[] texturenames = new int[2];
+        GLES20.glGenTextures(2, texturenames, 0);
 
         // Retrieve our image from resources.
-        int id = mContext.getResources().getIdentifier("mipmap/ic_launcher", null,
+        int id1 = mContext.getResources().getIdentifier("mipmap/ic_launcher", null,
+                mContext.getPackageName());
+        int id2 = mContext.getResources().getIdentifier("mipmap/apple", null,
                 mContext.getPackageName());
 
         // Temporary create a bitmap
-        Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(), id);
+        Bitmap bmp1 = BitmapFactory.decodeResource(mContext.getResources(), id1);
+        Bitmap bmp2 = BitmapFactory.decodeResource(mContext.getResources(), id2);
 
         // Bind texture to texturename
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texturenames[0]);
+
 
         // Set filtering
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
@@ -305,10 +371,30 @@ public class GLRenderer implements Renderer {
                 GLES20.GL_CLAMP_TO_EDGE);
 
         // Load the bitmap into the bound texture.
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp1, 0);
+
+//TODO need to see if I can optimize
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texturenames[1]);
+
+        // Set filtering
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
+                GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER,
+                GLES20.GL_LINEAR);
+
+        // Set wrapping mode
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S,
+                GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T,
+                GLES20.GL_CLAMP_TO_EDGE);
+
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp2, 0);
+
 
         // We are done using the bitmap so we should recycle it.
-        bmp.recycle();
+        bmp1.recycle();
+        bmp2.recycle();
 
     }
 
@@ -356,6 +442,29 @@ public class GLRenderer implements Renderer {
         dlb.order(ByteOrder.nativeOrder());
         drawListBuffer = dlb.asShortBuffer();
         drawListBuffer.put(androidManIndices);
+        drawListBuffer.position(0);
+    }
+
+    private void bufferizeApples()
+    {
+
+        // The vertex buffer.
+        float[] applesVertices = background.getVerticesApples();
+        //to do:ghosts
+        ByteBuffer bb = ByteBuffer.allocateDirect((applesVertices.length * 4));
+        bb.order(ByteOrder.nativeOrder());
+        vertexBuffer = bb.asFloatBuffer();
+        vertexBuffer.put(applesVertices);
+        vertexBuffer.position(0);
+
+        // initialize byte buffer for the draw list
+        short[] applesIndices = background.getIndicesApples();
+        numberOfIndicesToPlot = applesIndices.length;
+
+        ByteBuffer dlb = ByteBuffer.allocateDirect(numberOfIndicesToPlot* 2);
+        dlb.order(ByteOrder.nativeOrder());
+        drawListBuffer = dlb.asShortBuffer();
+        drawListBuffer.put(applesIndices);
         drawListBuffer.position(0);
     }
 
