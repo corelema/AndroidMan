@@ -35,6 +35,8 @@ public class ConnectionTestActivity extends Activity {
 
     // json array response url
     private String urlJsonArry = "http://24.148.5.145:12000/RESTFulJAXB/rest/datas";
+    //private String urlJsonArry = "http://24.148.5.145:12000/RESTFulJAXB/rest/users/get";
+    //private String urlJsonArry = "http://24.148.5.145:12000/RESTFulJAXB/rest/users/get";
 
     private static String TAG = ConnectionTestActivity.class.getSimpleName();
     private Button btnMakeObjectRequest, btnMakeArrayRequest;

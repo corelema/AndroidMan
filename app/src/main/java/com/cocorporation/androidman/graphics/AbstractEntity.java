@@ -88,10 +88,10 @@ public abstract class AbstractEntity {
         float y1 = shape.getCenterY() - shape.getHeight();
         float y2 = shape.getCenterY() + shape.getHeight();
 
-        Log.i(TAG, "x1 = " + x1);
+        /*Log.i(TAG, "x1 = " + x1);
         Log.i(TAG, "x2 = " + x2);
         Log.i(TAG, "y1 = " + y1);
-        Log.i(TAG, "y2 = " + y2);
+        Log.i(TAG, "y2 = " + y2);*/
 
         vertices[0] = x1;
         vertices[1] = y2;

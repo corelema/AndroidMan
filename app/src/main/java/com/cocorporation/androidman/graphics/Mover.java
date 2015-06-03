@@ -2,6 +2,9 @@ package com.cocorporation.androidman.graphics;
 
 import android.util.Log;
 
+import com.cocorporation.androidman.messages.MessagesManager;
+import com.cocorporation.androidman.messages.MessagesType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,10 +18,12 @@ public class Mover {
 
     private List<Rectangle> backgroundRectangles;
     private List<AbstractEntity> movingEntities;
+    private List<Rectangle> apples;
 
     public Mover(Background background)
     {
         this.backgroundRectangles = background.getRectangleList();
+        this.apples = background.getAppleList();
         movingEntities = new ArrayList<AbstractEntity>();
     }
 
@@ -59,23 +64,24 @@ public class Mover {
                                         if (collidedRectangleIndice == -1)
                                         {
                                             entity.moveToPoint(newPosition);
+                                            checkCollisionWithApples();
                                         }
-                                        else
-                                        {
+                                        else {
                                             Rectangle newPositionAdjusted;
-                                            if (((float)(int)(backgroundRectangles.get(collidedRectangleIndice).getY1()-newPosition.getHeight()))-1.0f == shape.getCenterY())
-                                            {
+                                            if (((float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY1() - newPosition.getHeight())) - 1.0f == shape.getCenterY()) {
                                                 newPositionAdjusted = findNearestPath(entity);
-                                            }
-                                            else {
+                                            } else {
                                                 newPositionAdjusted = new Rectangle(
                                                         newPosition.getCenterX(),
-                                                        (float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY1() - newPosition.getHeight())-1.0f,
+                                                        (float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY1() - newPosition.getHeight()) - 1.0f,
                                                         newPosition.getWidth(),
                                                         newPosition.getHeight());
                                             }
-                                            if (newPositionAdjusted!=null)
+                                            if (newPositionAdjusted != null)
+                                            {
                                                 entity.moveToPoint(newPositionAdjusted);
+                                                checkCollisionWithApples();
+                                            }
                                         }
                                         break;
                                     case DOWN:
@@ -88,6 +94,7 @@ public class Mover {
                                         if (collidedRectangleIndice == -1)
                                         {
                                             entity.moveToPoint(newPosition);
+                                            checkCollisionWithApples();
                                         }
                                         else
                                         {
@@ -104,7 +111,9 @@ public class Mover {
                                                         newPosition.getHeight());
                                             }
                                             if (newPositionAdjusted!=null)
+                                            {
                                                 entity.moveToPoint(newPositionAdjusted);
+                                            }
                                         }
                                         break;
                                     case LEFT:
@@ -117,6 +126,7 @@ public class Mover {
                                         if (collidedRectangleIndice == -1)
                                         {
                                             entity.moveToPoint(newPosition);
+                                            checkCollisionWithApples();
                                         }
                                         else
                                         {
@@ -133,7 +143,10 @@ public class Mover {
                                                         newPosition.getHeight());
                                             }
                                             if (newPositionAdjusted!=null)
+                                            {
                                                 entity.moveToPoint(newPositionAdjusted);
+                                                checkCollisionWithApples();
+                                            }
                                         }
                                         break;
                                     case RIGHT:
@@ -146,6 +159,7 @@ public class Mover {
                                         if (collidedRectangleIndice == -1)
                                         {
                                             entity.moveToPoint(newPosition);
+                                            checkCollisionWithApples();
                                         }
                                         else
                                         {
@@ -162,7 +176,10 @@ public class Mover {
                                                         newPosition.getHeight());
                                             }
                                             if (newPositionAdjusted!=null)
+                                            {
                                                 entity.moveToPoint(newPositionAdjusted);
+                                                checkCollisionWithApples();
+                                            }
                                         }
                                         break;
                                 }
@@ -374,6 +391,21 @@ public class Mover {
             }
         }
         return newPosition;
+    }
+
+    private void checkCollisionWithApples()
+    {
+        Rectangle androidManHitBox = movingEntities.get(0).getHitBox();
+        for (Rectangle apple : apples)
+        {
+            if (apple.intersect(androidManHitBox))
+            {
+                apples.remove(apple);
+                MessagesManager.getInstance().sendMessage(MessagesType.DELETEAPPLE, null);
+                Log.i(TAG, "Message sent");
+                break;
+            }
+        }
     }
 
     private float abs(float f1, float f2)

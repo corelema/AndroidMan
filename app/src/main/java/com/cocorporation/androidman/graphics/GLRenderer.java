@@ -22,6 +22,9 @@ import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.cocorporation.androidman.messages.MessagesManager;
+import com.cocorporation.androidman.messages.MessagesType;
+
 public class GLRenderer implements Renderer {
     private static final String TAG = "GLRendererDebug";
 
@@ -62,17 +65,20 @@ public class GLRenderer implements Renderer {
         factor = mScreenHeight/570.0f;
         background = new Background(factor, offsetx, offsety);
         background.createBasicBackground();
+        MessagesManager.getInstance().registerForMessage(MessagesType.DELETEAPPLE, background);
         entityManagement = new EntityManagement(factor, offsetx, offsety, background);
     }
 
     public void onPause()
     {
         /* Do stuff to pause the renderer */
+        MessagesManager.getInstance().unsubscribe(MessagesType.DELETEAPPLE, background);
     }
 
     public void onResume()
     {
         /* Do stuff to resume the renderer */
+        MessagesManager.getInstance().registerForMessage(MessagesType.DELETEAPPLE, background);
         mLastTime = System.currentTimeMillis();
     }
 
@@ -100,20 +106,20 @@ public class GLRenderer implements Renderer {
         // Render Background
         renderBackground(mtrxProjectionAndView);
 
-        // Bufferize AndroidMan
-        bufferizeAndroidMan();
-
         // Set our shader programm
         GLES20.glUseProgram(riGraphicTools.sp_Image);
-
-        // Render AndroidMan
-        renderAndroidMan(mtrxProjectionAndView);
 
         // Bufferize Apples
         bufferizeApples();
 
         // Render Apples
         renderApples(mtrxProjectionAndView);
+
+        // Bufferize AndroidMan
+        bufferizeAndroidMan();
+
+        // Render AndroidMan
+        renderAndroidMan(mtrxProjectionAndView);
 
         // Save the current time to see how long it took <img class="wp-smiley" alt=":)" src="http://androidblog.reindustries.com/wp-includes/images/smilies/icon_smile.gif"> .
         mLastTime = now;
@@ -284,6 +290,9 @@ public class GLRenderer implements Renderer {
 
         // Set the clear color to black
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1);
+
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
         // Create the solid shaders
         int vertexShader = riGraphicTools.loadShader(GLES20.GL_VERTEX_SHADER, riGraphicTools.vs_SolidColor);
