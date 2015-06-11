@@ -191,7 +191,7 @@ public class GLRenderer implements Renderer {
                 "s_texture" );
 
         // Set the sampler texture unit to 0, where we have saved the texture.
-        GLES20.glUniform1i ( mSamplerLoc, 0); //TODO CAN BE DONE ONLY ONCE NO?
+        GLES20.glUniform1i(mSamplerLoc, 0); //TODO CAN BE DONE ONLY ONCE NO?
 
         // Draw AndroidMan
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, numberOfIndicesToPlot,
@@ -285,7 +285,7 @@ public class GLRenderer implements Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         //Create the AndroidMan information
-        setupImage();
+        setupImage(background.getNumberOfApples());
         //setupApple();
 
         // Set the clear color to black
@@ -327,18 +327,21 @@ public class GLRenderer implements Renderer {
 
     }
 
-    public void setupImage()
+    public void setupImage(int numberOfApples)
     {
         // Create our UV coordinates.
-        uvs = new float[] {
-                0.0f, 0.0f,
-                0.0f, 1.0f,
-                1.0f, 1.0f,
-                1.0f, 0.0f,
-                0.0f, 0.0f,
-                0.0f, 1.0f,
-                1.0f, 1.0f,
-                1.0f, 0.0f//TODO need to make a bigger table or to see if can do another way
+        uvs = new float[numberOfApples * 8];
+        for (int i=0;i<numberOfApples;i++)
+        {
+            uvs[i*8] = 0.0f;
+            uvs[i*8 + 1] = 0.0f;
+            uvs[i*8 + 2] = 0.0f;
+            uvs[i*8 + 3] = 1.0f;
+            uvs[i*8 + 4] = 1.0f;
+            uvs[i*8 + 5] = 1.0f;
+            uvs[i*8 + 6] = 1.0f;
+            uvs[i*8 + 7] = 0.0f;
+            //TODO Can we do it more efficiently?
         };
 
         // The texture buffer

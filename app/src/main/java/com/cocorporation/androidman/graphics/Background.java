@@ -28,6 +28,7 @@ public class Background implements MessageReceiver {
     private float initPosYAndroidMan;
 
     private int numberOfBorders = 0;
+
     private int numberOfApples = 0;
 
     // List of rectangles making the board
@@ -117,8 +118,15 @@ public class Background implements MessageReceiver {
             last = last + 4;
         }
 
-        createApple(20, 50, 20, 50);
-        createApple(80, 110, 20, 50);
+        for (int k=0;k<5;k++)
+        {
+            createApple(27f + k * 54, 47f + k * 54, 25, 45);
+            createApple(307f + k * 54, 327f + k * 54, 25, 45);
+            createApple(27f + k * 54, 47f + k * 54, 575, 595);
+            createApple(307f + k * 54, 327f + k * 54, 575, 595);
+            createApple(27f + k * 54, 47f + k * 54, 505, 525);
+            createApple(307f + k * 54, 327f + k * 54, 505, 525);
+        }
 
         verticesApples = new float[numberOfApples*4*3];
         createVerticesApples();
@@ -209,6 +217,28 @@ public class Background implements MessageReceiver {
         }
     }
 
+    @Override
+    public void receiveMessage(Object message) {
+        Log.i(TAG, "Received Message");
+        numberOfApples--;
+        verticesApples = new float[numberOfApples*4*3];
+        createVerticesApples();
+        indicesApples = new short[numberOfApples*6];
+        int last = 0;
+        for(int j=0;j<numberOfApples;j++)
+        {
+            // We need to set the new indices for the new quad
+            indicesApples[(j*6) + 0] = (short) (last + 0);
+            indicesApples[(j*6) + 1] = (short) (last + 1);
+            indicesApples[(j*6) + 2] = (short) (last + 2);
+            indicesApples[(j*6) + 3] = (short) (last + 0);
+            indicesApples[(j*6) + 4] = (short) (last + 2);
+            indicesApples[(j*6) + 5] = (short) (last + 3);
+
+            last = last + 4;
+        }
+    }
+
     public float[] getVertices() {
         return vertices;
     }
@@ -241,25 +271,7 @@ public class Background implements MessageReceiver {
         return appleList;
     }
 
-    @Override
-    public void receiveMessage(Object message) {
-        Log.i(TAG, "Received Message");
-        numberOfApples--;
-        verticesApples = new float[numberOfApples*4*3];
-        createVerticesApples();
-        indicesApples = new short[numberOfApples*6];
-        int last = 0;
-        for(int j=0;j<numberOfApples;j++)
-        {
-            // We need to set the new indices for the new quad
-            indicesApples[(j*6) + 0] = (short) (last + 0);
-            indicesApples[(j*6) + 1] = (short) (last + 1);
-            indicesApples[(j*6) + 2] = (short) (last + 2);
-            indicesApples[(j*6) + 3] = (short) (last + 0);
-            indicesApples[(j*6) + 4] = (short) (last + 2);
-            indicesApples[(j*6) + 5] = (short) (last + 3);
-
-            last = last + 4;
-        }
+    public int getNumberOfApples() {
+        return numberOfApples;
     }
 }
