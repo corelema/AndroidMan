@@ -15,8 +15,8 @@ public abstract class AbstractEntity {
     private float offsety = 0.0f;
 
     // Motion variables
-    private Direction direction;
-    private float speed;
+    protected Direction currentDirection;
+    protected float speed;
 
     private short[] indices = {0,1,2,0,2,3};
 
@@ -115,18 +115,18 @@ public abstract class AbstractEntity {
 
     public void setMoveParameters(Direction direction, float speed)
     {
-        this.direction = direction;
+        this.currentDirection = direction;
         this.speed = speed;
     }
 
     public void stopMoving()
     {
-        this.direction = Direction.LEFT;
+        this.currentDirection = Direction.LEFT;
         this.speed = 0.0f;
     }
 
-    public Direction getDirection() {
-        return direction;
+    public Direction getCurrentDirection() {
+        return currentDirection;
     }
 
     public float getSpeed() {

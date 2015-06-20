@@ -14,30 +14,32 @@ import java.util.List;
 public class Mover {
     private static final String TAG = "Mover";
 
-    private int numberOfNeighboorsToTest = 40;
+    private static final int numberOfNeighboorsToTest = 40;
+    private static final float colleteralStepsCheck = 5.0f;
 
     private List<Rectangle> backgroundRectangles;
-    private List<AbstractEntity> movingEntities;
+    private List<Ghost> ghosts;
     private List<Rectangle> apples;
+    private AndroidMan androidMan;
 
     public Mover(Background background)
     {
         this.backgroundRectangles = background.getRectangleList();
         this.apples = background.getAppleList();
-        movingEntities = new ArrayList<AbstractEntity>();
+        ghosts = new ArrayList<Ghost>();
     }
 
-    public void addMovingEntity(AbstractEntity entity)
+    public void addMovingGhost(Ghost ghost)
     {
-        movingEntities.add(entity);
+        ghosts.add(ghost);
     }
 
-    public boolean removeMovingEntity(AbstractEntity entity)
+    public boolean freezeGhost(Ghost ghost)
     {
-        return movingEntities.remove(entity);
+        return ghosts.remove(ghost);
     }
 
-    public void launchMovement()
+    public void launchMovementAndroidMan()
     {
         Thread motionThread = new Thread(){
             public void run(){
@@ -45,15 +47,198 @@ public class Mover {
                 {
                     while(true)
                     {
-                        for (AbstractEntity entity : movingEntities) {
+                        //Log.i(TAG, "Speed = " + speed);
+                        float speed = androidMan.getSpeed();
+                        Direction currentDirection = androidMan.getCurrentDirection();
+                        Rectangle shape = androidMan.getShape();
+                        if (speed != 0.0f) {
+                            Rectangle newPosition;
+                            int collidedRectangleIndice;
+                            switch (currentDirection) {
+                                case UP:
+                                    newPosition = new Rectangle(
+                                            shape.getCenterX(),
+                                            shape.getCenterY() + speed,
+                                            shape.getWidth(),
+                                            shape.getHeight());
+                                    collidedRectangleIndice = collisionWithBackground(newPosition);
+                                    if (collidedRectangleIndice == -1)
+                                    {
+                                        androidMan.moveToPoint(newPosition);
+                                        checkCollisionWithApples(androidMan);
+                                    }
+                                    else {
+                                        Rectangle newPositionAdjusted;
+                                        if (((float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY1() - newPosition.getHeight())) - 1.0f == shape.getCenterY()) {
+                                            newPositionAdjusted = findNearestPath(androidMan);
+                                        } else {
+                                            newPositionAdjusted = new Rectangle(
+                                                    newPosition.getCenterX(),
+                                                    (float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY1() - newPosition.getHeight()) - 1.0f,
+                                                    newPosition.getWidth(),
+                                                    newPosition.getHeight());
+                                        }
+                                        if (newPositionAdjusted != null)
+                                        {
+                                            androidMan.moveToPoint(newPositionAdjusted);
+                                            checkCollisionWithApples(androidMan);
+                                        }
+                                    }
+                                    break;
+                                case DOWN:
+                                    newPosition = new Rectangle(
+                                            shape.getCenterX(),
+                                            shape.getCenterY() - speed,
+                                            shape.getWidth(),
+                                            shape.getHeight());
+                                    collidedRectangleIndice = collisionWithBackground(newPosition);
+                                    if (collidedRectangleIndice == -1)
+                                    {
+                                        androidMan.moveToPoint(newPosition);
+                                        checkCollisionWithApples(androidMan);
+                                    }
+                                    else
+                                    {
+                                        Rectangle newPositionAdjusted;
+                                        if (((float)(int)(backgroundRectangles.get(collidedRectangleIndice).getY2()+newPosition.getHeight()))+1.0f == shape.getCenterY())
+                                        {
+                                            newPositionAdjusted = findNearestPath(androidMan);
+                                        }
+                                        else {
+                                            newPositionAdjusted = new Rectangle(
+                                                    newPosition.getCenterX(),
+                                                    (float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY2()+newPosition.getHeight()+1.0f),
+                                                    newPosition.getWidth(),
+                                                    newPosition.getHeight());
+                                        }
+                                        if (newPositionAdjusted!=null)
+                                        {
+                                            androidMan.moveToPoint(newPositionAdjusted);
+                                        }
+                                    }
+                                    break;
+                                case LEFT:
+                                    newPosition = new Rectangle(
+                                            shape.getCenterX() - speed,
+                                            shape.getCenterY(),
+                                            shape.getWidth(),
+                                            shape.getHeight());
+                                    collidedRectangleIndice = collisionWithBackground(newPosition);
+                                    if (collidedRectangleIndice == -1)
+                                    {
+                                        androidMan.moveToPoint(newPosition);
+                                        checkCollisionWithApples(androidMan);
+                                    }
+                                    else
+                                    {
+                                        Rectangle newPositionAdjusted;
+                                        if (((float)(int)(backgroundRectangles.get(collidedRectangleIndice).getX2()+newPosition.getWidth()))+1.0f == shape.getCenterX())
+                                        {
+                                            newPositionAdjusted = findNearestPath(androidMan);
+                                        }
+                                        else {
+                                            newPositionAdjusted = new Rectangle(
+                                                    ((float)(int)(backgroundRectangles.get(collidedRectangleIndice).getX2()+newPosition.getWidth()))+1.0f,
+                                                    shape.getCenterY(),
+                                                    newPosition.getWidth(),
+                                                    newPosition.getHeight());
+                                        }
+                                        if (newPositionAdjusted!=null)
+                                        {
+                                            androidMan.moveToPoint(newPositionAdjusted);
+                                            checkCollisionWithApples(androidMan);
+                                        }
+                                    }
+                                    break;
+                                case RIGHT:
+                                    newPosition = new Rectangle(
+                                            shape.getCenterX() + speed,
+                                            shape.getCenterY(),
+                                            shape.getWidth(),
+                                            shape.getHeight());
+                                    collidedRectangleIndice = collisionWithBackground(newPosition);
+                                    if (collidedRectangleIndice == -1)
+                                    {
+                                        androidMan.moveToPoint(newPosition);
+                                        checkCollisionWithApples(androidMan);
+                                    }
+                                    else
+                                    {
+                                        Rectangle newPositionAdjusted;
+                                        if (((float)(int)(backgroundRectangles.get(collidedRectangleIndice).getX1()-newPosition.getWidth()))-1.0f == shape.getCenterX())
+                                        {
+                                            newPositionAdjusted = findNearestPath(androidMan);
+                                        }
+                                        else {
+                                            newPositionAdjusted = new Rectangle(
+                                                    ((float)(int)(backgroundRectangles.get(collidedRectangleIndice).getX1()-newPosition.getWidth()))-1.0f,
+                                                    shape.getCenterY(),
+                                                    newPosition.getWidth(),
+                                                    newPosition.getHeight());
+                                        }
+                                        if (newPositionAdjusted!=null)
+                                        {
+                                            androidMan.moveToPoint(newPositionAdjusted);
+                                            checkCollisionWithApples(androidMan);
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                        Thread.sleep(10);
+                    }
+                }
+                catch(Throwable t)
+                {
+
+                }
+                finally
+                {
+
+                }
+            }
+        };
+        motionThread.start();
+    }
+
+    public void launchMovementGhosts()
+    {
+        Thread motionThread = new Thread(){
+            public void run(){
+                try
+                {
+                    while(true) {
+                        for (Ghost ghost : ghosts) {
                             //Log.i(TAG, "Speed = " + speed);
-                            float speed = entity.getSpeed();
-                            Direction direction = entity.getDirection();
-                            Rectangle shape = entity.getShape();
+                            float speed = ghost.getSpeed();
+                            Direction currentDirection = ghost.getCurrentDirection();
+                            Direction lastDirection = ghost.getLastDirection();
+                            Rectangle shape = ghost.getShape();
                             if (speed != 0.0f) {
                                 Rectangle newPosition;
                                 int collidedRectangleIndice;
-                                switch (direction) {
+                                if (ghost.getChangeDirectionCountDown() == 0)
+                                {
+                                    List<Direction> possibleDirections = findPossibleDirections(ghost);
+
+                                    if (possibleDirections.size() == 1)
+                                    {
+                                        if (possibleDirections.get(0) != currentDirection)//direction change and only one choice
+                                        {
+                                            currentDirection = possibleDirections.get(0);
+                                            ghost.setDirection(currentDirection, true);
+                                        }
+                                        //no else necessary, as it means that we are staying in the same direction
+                                    }
+                                    else if (possibleDirections.size() != 0)//more than one direction is possible, we have to pick one and stick to it for a while
+                                    {
+                                        int newDirection = (int) Math.floor(Math.random()*possibleDirections.size());
+                                        currentDirection = possibleDirections.get(newDirection);
+                                        ghost.setDirection(currentDirection, true);
+                                    }
+                                }
+
+                                switch (currentDirection) {
                                     case UP:
                                         newPosition = new Rectangle(
                                                 shape.getCenterX(),
@@ -61,15 +246,12 @@ public class Mover {
                                                 shape.getWidth(),
                                                 shape.getHeight());
                                         collidedRectangleIndice = collisionWithBackground(newPosition);
-                                        if (collidedRectangleIndice == -1)
-                                        {
-                                            entity.moveToPoint(newPosition);
-                                            checkCollisionWithApples();
-                                        }
-                                        else {
+                                        if (collidedRectangleIndice == -1) {
+                                            ghost.moveToPoint(newPosition);
+                                        } else {
                                             Rectangle newPositionAdjusted;
                                             if (((float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY1() - newPosition.getHeight())) - 1.0f == shape.getCenterY()) {
-                                                newPositionAdjusted = findNearestPath(entity);
+                                                newPositionAdjusted = findNearestPath(ghost);
                                             } else {
                                                 newPositionAdjusted = new Rectangle(
                                                         newPosition.getCenterX(),
@@ -77,10 +259,12 @@ public class Mover {
                                                         newPosition.getWidth(),
                                                         newPosition.getHeight());
                                             }
-                                            if (newPositionAdjusted != null)
+                                            if (newPositionAdjusted != null) {
+                                                ghost.moveToPoint(newPositionAdjusted);
+                                            }
+                                            else
                                             {
-                                                entity.moveToPoint(newPositionAdjusted);
-                                                checkCollisionWithApples();
+                                                ghost.resetDirectionCountDown();
                                             }
                                         }
                                         break;
@@ -91,28 +275,25 @@ public class Mover {
                                                 shape.getWidth(),
                                                 shape.getHeight());
                                         collidedRectangleIndice = collisionWithBackground(newPosition);
-                                        if (collidedRectangleIndice == -1)
-                                        {
-                                            entity.moveToPoint(newPosition);
-                                            checkCollisionWithApples();
-                                        }
-                                        else
-                                        {
+                                        if (collidedRectangleIndice == -1) {
+                                            ghost.moveToPoint(newPosition);
+                                        } else {
                                             Rectangle newPositionAdjusted;
-                                            if (((float)(int)(backgroundRectangles.get(collidedRectangleIndice).getY2()+newPosition.getHeight()))+1.0f == shape.getCenterY())
-                                            {
-                                                newPositionAdjusted = findNearestPath(entity);
-                                            }
-                                            else {
+                                            if (((float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY2() + newPosition.getHeight())) + 1.0f == shape.getCenterY()) {
+                                                newPositionAdjusted = findNearestPath(ghost);
+                                            } else {
                                                 newPositionAdjusted = new Rectangle(
                                                         newPosition.getCenterX(),
-                                                        (float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY2()+newPosition.getHeight()+1.0f),
+                                                        (float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY2() + newPosition.getHeight() + 1.0f),
                                                         newPosition.getWidth(),
                                                         newPosition.getHeight());
                                             }
-                                            if (newPositionAdjusted!=null)
+                                            if (newPositionAdjusted != null) {
+                                                ghost.moveToPoint(newPositionAdjusted);
+                                            }
+                                            else
                                             {
-                                                entity.moveToPoint(newPositionAdjusted);
+                                                ghost.resetDirectionCountDown();
                                             }
                                         }
                                         break;
@@ -123,29 +304,25 @@ public class Mover {
                                                 shape.getWidth(),
                                                 shape.getHeight());
                                         collidedRectangleIndice = collisionWithBackground(newPosition);
-                                        if (collidedRectangleIndice == -1)
-                                        {
-                                            entity.moveToPoint(newPosition);
-                                            checkCollisionWithApples();
-                                        }
-                                        else
-                                        {
+                                        if (collidedRectangleIndice == -1) {
+                                            ghost.moveToPoint(newPosition);
+                                        } else {
                                             Rectangle newPositionAdjusted;
-                                            if (((float)(int)(backgroundRectangles.get(collidedRectangleIndice).getX2()+newPosition.getWidth()))+1.0f == shape.getCenterX())
-                                            {
-                                                newPositionAdjusted = findNearestPath(entity);
-                                            }
-                                            else {
+                                            if (((float) (int) (backgroundRectangles.get(collidedRectangleIndice).getX2() + newPosition.getWidth())) + 1.0f == shape.getCenterX()) {
+                                                newPositionAdjusted = findNearestPath(ghost);
+                                            } else {
                                                 newPositionAdjusted = new Rectangle(
-                                                        ((float)(int)(backgroundRectangles.get(collidedRectangleIndice).getX2()+newPosition.getWidth()))+1.0f,
+                                                        ((float) (int) (backgroundRectangles.get(collidedRectangleIndice).getX2() + newPosition.getWidth())) + 1.0f,
                                                         shape.getCenterY(),
                                                         newPosition.getWidth(),
                                                         newPosition.getHeight());
                                             }
-                                            if (newPositionAdjusted!=null)
+                                            if (newPositionAdjusted != null) {
+                                                ghost.moveToPoint(newPositionAdjusted);
+                                            }
+                                            else
                                             {
-                                                entity.moveToPoint(newPositionAdjusted);
-                                                checkCollisionWithApples();
+                                                ghost.resetDirectionCountDown();
                                             }
                                         }
                                         break;
@@ -156,36 +333,32 @@ public class Mover {
                                                 shape.getWidth(),
                                                 shape.getHeight());
                                         collidedRectangleIndice = collisionWithBackground(newPosition);
-                                        if (collidedRectangleIndice == -1)
-                                        {
-                                            entity.moveToPoint(newPosition);
-                                            checkCollisionWithApples();
-                                        }
-                                        else
-                                        {
+                                        if (collidedRectangleIndice == -1) {
+                                            ghost.moveToPoint(newPosition);
+                                        } else {
                                             Rectangle newPositionAdjusted;
-                                            if (((float)(int)(backgroundRectangles.get(collidedRectangleIndice).getX1()-newPosition.getWidth()))-1.0f == shape.getCenterX())
-                                            {
-                                                newPositionAdjusted = findNearestPath(entity);
-                                            }
-                                            else {
+                                            if (((float) (int) (backgroundRectangles.get(collidedRectangleIndice).getX1() - newPosition.getWidth())) - 1.0f == shape.getCenterX()) {
+                                                newPositionAdjusted = findNearestPath(ghost);
+                                            } else {
                                                 newPositionAdjusted = new Rectangle(
-                                                        ((float)(int)(backgroundRectangles.get(collidedRectangleIndice).getX1()-newPosition.getWidth()))-1.0f,
+                                                        ((float) (int) (backgroundRectangles.get(collidedRectangleIndice).getX1() - newPosition.getWidth())) - 1.0f,
                                                         shape.getCenterY(),
                                                         newPosition.getWidth(),
                                                         newPosition.getHeight());
                                             }
-                                            if (newPositionAdjusted!=null)
+                                            if (newPositionAdjusted != null) {
+                                                ghost.moveToPoint(newPositionAdjusted);
+                                            }
+                                            else
                                             {
-                                                entity.moveToPoint(newPositionAdjusted);
-                                                checkCollisionWithApples();
+                                                ghost.resetDirectionCountDown();
                                             }
                                         }
                                         break;
                                 }
                             }
-                            Thread.sleep(10);
                         }
+                        Thread.sleep(10);
                     }
                 }
                 catch(Throwable t)
@@ -214,9 +387,106 @@ public class Mover {
         return -1;
     }
 
+    private List<Direction> findPossibleDirections(AbstractEntity entity) {
+        Direction currentDirection = entity.currentDirection;
+        Rectangle currentPosition = entity.getShape();
+        Rectangle testPosition1, testPosition2;
+        float currentSpeed = entity.getSpeed();
+
+        List<Direction> directionsPossible = new ArrayList<Direction>();
+
+        if (currentDirection == Direction.UP || currentDirection == Direction.DOWN)
+        {
+            testPosition1 = new Rectangle(
+                    currentPosition.getCenterX() - colleteralStepsCheck,
+                    currentPosition.getCenterY(),
+                    currentPosition.getWidth(),
+                    currentPosition.getHeight());
+
+            if (collisionWithBackground(testPosition1) == -1) //left is ok
+                directionsPossible.add(Direction.LEFT);
+
+            testPosition2 = new Rectangle(
+                    currentPosition.getCenterX() + colleteralStepsCheck,
+                    currentPosition.getCenterY(),
+                    currentPosition.getWidth(),
+                    currentPosition.getHeight());
+
+            if (collisionWithBackground(testPosition2) == -1) //right is ok
+                directionsPossible.add(Direction.RIGHT);
+
+        }
+        else //currentDirection == LEFT or RIGHT
+        {
+            testPosition1 = new Rectangle(
+                    currentPosition.getCenterX(),
+                    currentPosition.getCenterY() - colleteralStepsCheck,
+                    currentPosition.getWidth(),
+                    currentPosition.getHeight());
+
+            if (collisionWithBackground(testPosition1) == -1) //down is ok
+                directionsPossible.add(Direction.DOWN);
+
+            testPosition2 = new Rectangle(
+                    currentPosition.getCenterX(),
+                    currentPosition.getCenterY() + colleteralStepsCheck,
+                    currentPosition.getWidth(),
+                    currentPosition.getHeight());
+
+            if (collisionWithBackground(testPosition2) == -1) //up is ok
+                directionsPossible.add(Direction.UP);
+        }
+
+        switch(currentDirection) // checking if we can continue moving forward
+        {
+            case UP:
+                testPosition1 = new Rectangle(
+                        currentPosition.getCenterX(),
+                        currentPosition.getCenterY() + currentSpeed+1,
+                        currentPosition.getWidth(),
+                        currentPosition.getHeight());
+
+                if (collisionWithBackground(testPosition1) == -1) //continuing up is ok
+                    directionsPossible.add(Direction.UP);
+                break;
+            case DOWN:
+                testPosition1 = new Rectangle(
+                        currentPosition.getCenterX(),
+                        currentPosition.getCenterY() - currentSpeed-1,
+                        currentPosition.getWidth(),
+                        currentPosition.getHeight());
+
+                if (collisionWithBackground(testPosition1) == -1) //continuing down is ok
+                    directionsPossible.add(Direction.DOWN);
+                break;
+            case LEFT:
+                testPosition1 = new Rectangle(
+                        currentPosition.getCenterX() - currentSpeed-1,
+                        currentPosition.getCenterY(),
+                        currentPosition.getWidth(),
+                        currentPosition.getHeight());
+
+                if (collisionWithBackground(testPosition1) == -1) //continuing left is ok
+                    directionsPossible.add(Direction.LEFT);
+                break;
+            case RIGHT:
+                testPosition1 = new Rectangle(
+                        currentPosition.getCenterX() + currentSpeed+1,
+                        currentPosition.getCenterY(),
+                        currentPosition.getWidth(),
+                        currentPosition.getHeight());
+
+                if (collisionWithBackground(testPosition1) == -1) //continuing right is ok
+                    directionsPossible.add(Direction.RIGHT);
+                break;
+        }
+
+        return directionsPossible;
+    }
+
     private Rectangle findNearestPath(AbstractEntity entity)
     {
-        Direction direction = entity.getDirection();
+        Direction direction = entity.getCurrentDirection();
         Rectangle shape = entity.getShape();
         float speed = entity.getSpeed();
         Rectangle newPosition = null;
@@ -393,9 +663,9 @@ public class Mover {
         return newPosition;
     }
 
-    private void checkCollisionWithApples()
+    private void checkCollisionWithApples(AbstractEntity entity)
     {
-        Rectangle androidManHitBox = movingEntities.get(0).getHitBox();
+        Rectangle androidManHitBox = entity.getHitBox();
         for (Rectangle apple : apples)
         {
             if (apple.intersect(androidManHitBox))
@@ -421,5 +691,9 @@ public class Mover {
     public void stopMovement()
     {
         //TBD
+    }
+
+    public void setAndroidMan(AndroidMan androidMan) {
+        this.androidMan = androidMan;
     }
 }

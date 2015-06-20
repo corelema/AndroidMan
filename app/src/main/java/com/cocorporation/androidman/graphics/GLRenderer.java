@@ -8,6 +8,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -121,6 +123,12 @@ public class GLRenderer implements Renderer {
         // Render AndroidMan
         renderAndroidMan(mtrxProjectionAndView);
 
+        // Bufferize Ghosts
+        bufferizeGhosts();
+
+        // Render AndroidMan
+        renderGhosts(mtrxProjectionAndView);
+
         // Save the current time to see how long it took <img class="wp-smiley" alt=":)" src="http://androidblog.reindustries.com/wp-includes/images/smilies/icon_smile.gif"> .
         mLastTime = now;
 
@@ -172,7 +180,7 @@ public class GLRenderer implements Renderer {
                 "a_texCoord" );
 
         // Enable generic vertex attribute array
-        GLES20.glEnableVertexAttribArray ( mTexCoordLoc );
+        GLES20.glEnableVertexAttribArray(mTexCoordLoc);
 
         // Prepare the texturecoordinates
         GLES20.glVertexAttribPointer ( mTexCoordLoc, 2, GLES20.GL_FLOAT,
@@ -194,6 +202,55 @@ public class GLRenderer implements Renderer {
         GLES20.glUniform1i(mSamplerLoc, 0); //TODO CAN BE DONE ONLY ONCE NO?
 
         // Draw AndroidMan
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, numberOfIndicesToPlot,
+                GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+
+        // Disable vertex array
+        GLES20.glDisableVertexAttribArray(mPositionHandle);
+        GLES20.glDisableVertexAttribArray(mTexCoordLoc);
+    }
+
+    private void renderGhosts(float[] m)
+    {
+        // get handle to vertex shader's vPosition member
+        int mPositionHandle =
+                GLES20.glGetAttribLocation(riGraphicTools.sp_Image, "vPosition");
+
+        // Enable generic vertex attribute array
+        GLES20.glEnableVertexAttribArray(mPositionHandle);
+
+        // Prepare the triangle coordinate data
+        GLES20.glVertexAttribPointer(mPositionHandle, 3,
+                GLES20.GL_FLOAT, false,
+                0, vertexBuffer);
+
+        // Get handle to texture coordinates location
+        int mTexCoordLoc = GLES20.glGetAttribLocation(riGraphicTools.sp_Image,
+                "a_texCoord" );
+
+        // Enable generic vertex attribute array
+        GLES20.glEnableVertexAttribArray(mTexCoordLoc);
+
+        // Prepare the texturecoordinates
+        GLES20.glVertexAttribPointer ( mTexCoordLoc, 2, GLES20.GL_FLOAT,
+                false,
+                0, uvBuffer);
+
+        // Get handle to shape's transformation matrix
+        int mtrxhandle = GLES20.glGetUniformLocation(riGraphicTools.sp_Image,
+                "uMVPMatrix");
+
+        // Apply the projection and view transformation
+        GLES20.glUniformMatrix4fv(mtrxhandle, 1, false, m, 0);
+
+        // Get handle to textures locations
+        int mSamplerLoc = GLES20.glGetUniformLocation (riGraphicTools.sp_Image,
+                "s_texture" );
+
+        // Set the sampler texture unit to 0, where we have saved the texture.
+        GLES20.glUniform1i(mSamplerLoc, 1); //TODO CAN BE DONE ONLY ONCE NO?
+
+        // Draw Ghosts
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, numberOfIndicesToPlot,
                 GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
 
@@ -327,6 +384,7 @@ public class GLRenderer implements Renderer {
 
     }
 
+    //TODO have to make a separate function for AndroidMan and for Ghosts
     public void setupImage(int numberOfApples)
     {
         // Create our UV coordinates.
@@ -439,7 +497,6 @@ public class GLRenderer implements Renderer {
 
         // The vertex buffer.
         float[] androidManVertices = androidMan.generateVertices();
-        //to do:ghosts
         ByteBuffer bb = ByteBuffer.allocateDirect((androidManVertices.length) * 4);
         bb.order(ByteOrder.nativeOrder());
         vertexBuffer = bb.asFloatBuffer();
@@ -457,12 +514,37 @@ public class GLRenderer implements Renderer {
         drawListBuffer.position(0);
     }
 
+    private void bufferizeGhosts()
+    {
+        // The vertex buffer.
+        float[] ghostsVertices = entityManagement.getVerticesGhosts();
+        ByteBuffer bb = ByteBuffer.allocateDirect((ghostsVertices.length) * 4);
+        bb.order(ByteOrder.nativeOrder());
+        vertexBuffer = bb.asFloatBuffer();
+        vertexBuffer.put(ghostsVertices);
+        vertexBuffer.position(0);
+
+        // initialize byte buffer for the draw list
+        short[] ghostsIndices = entityManagement.getIndicesGhosts();
+        numberOfIndicesToPlot = ghostsIndices.length;
+
+        ByteBuffer dlb = ByteBuffer.allocateDirect(numberOfIndicesToPlot* 2);
+        dlb.order(ByteOrder.nativeOrder());
+        drawListBuffer = dlb.asShortBuffer();
+        drawListBuffer.put(ghostsIndices);
+        drawListBuffer.position(0);
+
+        //Log.i(TAG, "Number of ghosts = " + listOfGhosts.size());
+        Log.i(TAG, "GhostsVertices.length = " + ghostsVertices.length);
+        Log.i(TAG, "ghostsIndices.length = " + ghostsIndices.length);
+        Log.i(TAG, "numberOfIndicesToPlot = " + numberOfIndicesToPlot);
+    }
+
     private void bufferizeApples()
     {
 
         // The vertex buffer.
         float[] applesVertices = background.getVerticesApples();
-        //to do:ghosts
         ByteBuffer bb = ByteBuffer.allocateDirect((applesVertices.length * 4));
         bb.order(ByteOrder.nativeOrder());
         vertexBuffer = bb.asFloatBuffer();
@@ -480,7 +562,7 @@ public class GLRenderer implements Renderer {
         drawListBuffer.position(0);
     }
 
-    private void addOffsetToIndies(short[] indices, short offset)
+    private void addOffsetToIndices(short[] indices, short offset)
     {
         if (indices[0]==0)
         {
