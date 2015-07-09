@@ -14,6 +14,7 @@ import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,9 +22,18 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
+import com.cocorporation.androidman.R;
 import com.cocorporation.androidman.messages.MessagesManager;
 import com.cocorporation.androidman.messages.MessagesType;
 
@@ -59,6 +69,8 @@ public class GLRenderer implements Renderer {
     Context mContext;
     long mLastTime;
     int mProgram;
+
+    boolean levelWon = false;
 
     public GLRenderer(Context c)
     {
@@ -132,6 +144,16 @@ public class GLRenderer implements Renderer {
         // Save the current time to see how long it took <img class="wp-smiley" alt=":)" src="http://androidblog.reindustries.com/wp-includes/images/smilies/icon_smile.gif"> .
         mLastTime = now;
 
+        if (!levelWon && background.getNumberOfApples() == 0) {
+            Message message = new Message();
+            message.what = DialogHandler.OPEN_ANNOTATION;
+
+            // Here you can create a Bundle in order to pass more data inside the Message
+
+            GLSurf.dialogHandler.sendMessage(message);
+
+            levelWon = true;
+        }
     }
 
     private void renderBackground(float[] m)

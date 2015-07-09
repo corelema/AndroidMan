@@ -3,6 +3,8 @@ package com.cocorporation.androidman.graphics;
 import android.util.Log;
 
 import com.cocorporation.androidman.messages.MessageReceiver;
+import com.cocorporation.androidman.messages.MessagesManager;
+import com.cocorporation.androidman.messages.MessagesType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +26,13 @@ public class Background implements MessageReceiver {
 
     // Initial position for AndroidMan, depends on which background is implemented
     private float initPosXAndroidMan;
-
     private float initPosYAndroidMan;
+
+    private float initPosXGhosts;
+    private float initPosYGhosts;
+
+    private float maxX;
+    private float minX;
 
     private int numberOfBorders = 0;
 
@@ -48,6 +55,12 @@ public class Background implements MessageReceiver {
     {
         initPosXAndroidMan = offsetx + factor * 35.0f;
         initPosYAndroidMan = offsety + factor * 215.0f;
+
+        initPosXGhosts = offsetx + factor * 260.0f;
+        initPosYGhosts = offsety + factor * 330.0f;
+
+        maxX = offsetx + factor * 570;
+        minX = offsetx + factor * 0;
 
         createRectangle(0,120,360,370);
         createRectangle(110,120,370,420);
@@ -98,6 +111,13 @@ public class Background implements MessageReceiver {
         createRectangle(390,400,70,130);
         createRectangle(60, 230, 60, 70);
         createRectangle(340,510,60,70);
+
+        createRectangle(230,235,300,370);
+        createRectangle(235,335,300,305);
+        createRectangle(335,340,300,370);
+
+        createRectangle(235,260,368,370);
+        createRectangle(310,335,368,370);
 
         vertices = new float[numberOfBorders*4*3];
         createVerticesRectangle();
@@ -221,6 +241,9 @@ public class Background implements MessageReceiver {
     public void receiveMessage(Object message) {
         Log.i(TAG, "Received Message");
         numberOfApples--;
+        if (numberOfApples == 0)
+            MessagesManager.getInstance().sendMessage(MessagesType.WIN, null);
+
         verticesApples = new float[numberOfApples*4*3];
         createVerticesApples();
         indicesApples = new short[numberOfApples*6];
@@ -273,5 +296,21 @@ public class Background implements MessageReceiver {
 
     public int getNumberOfApples() {
         return numberOfApples;
+    }
+
+    public float getMaxX() {
+        return maxX;
+    }
+
+    public float getMinX() {
+        return minX;
+    }
+
+    public float getInitPosXGhosts() {
+        return initPosXGhosts;
+    }
+
+    public float getInitPosYGhosts() {
+        return initPosYGhosts;
     }
 }

@@ -22,11 +22,16 @@ public class Mover {
     private List<Rectangle> apples;
     private AndroidMan androidMan;
 
+    private float minX;
+    private float maxX;
+
     public Mover(Background background)
     {
         this.backgroundRectangles = background.getRectangleList();
         this.apples = background.getAppleList();
         ghosts = new ArrayList<Ghost>();
+        this.minX = background.getMinX();
+        this.maxX = background.getMaxX();
     }
 
     public void addMovingGhost(Ghost ghost)
@@ -126,6 +131,14 @@ public class Mover {
                                     collidedRectangleIndice = collisionWithBackground(newPosition);
                                     if (collidedRectangleIndice == -1)
                                     {
+                                        if (newPosition.getCenterX() < minX)
+                                        {
+                                            newPosition = new Rectangle(
+                                                    shape.getCenterX() - speed + maxX,
+                                                    shape.getCenterY(),
+                                                    shape.getWidth(),
+                                                    shape.getHeight());
+                                        }
                                         androidMan.moveToPoint(newPosition);
                                         checkCollisionWithApples(androidMan);
                                     }
@@ -159,6 +172,14 @@ public class Mover {
                                     collidedRectangleIndice = collisionWithBackground(newPosition);
                                     if (collidedRectangleIndice == -1)
                                     {
+                                        if (newPosition.getCenterX() > maxX)
+                                        {
+                                            newPosition = new Rectangle(
+                                                    minX + shape.getCenterX() - speed - maxX,
+                                                    shape.getCenterY(),
+                                                    shape.getWidth(),
+                                                    shape.getHeight());
+                                        }
                                         androidMan.moveToPoint(newPosition);
                                         checkCollisionWithApples(androidMan);
                                     }
@@ -305,6 +326,14 @@ public class Mover {
                                                 shape.getHeight());
                                         collidedRectangleIndice = collisionWithBackground(newPosition);
                                         if (collidedRectangleIndice == -1) {
+                                            if (newPosition.getCenterX() < minX)
+                                            {
+                                                newPosition = new Rectangle(
+                                                        shape.getCenterX() - speed + maxX,
+                                                        shape.getCenterY(),
+                                                        shape.getWidth(),
+                                                        shape.getHeight());
+                                            }
                                             ghost.moveToPoint(newPosition);
                                         } else {
                                             Rectangle newPositionAdjusted;
@@ -334,6 +363,14 @@ public class Mover {
                                                 shape.getHeight());
                                         collidedRectangleIndice = collisionWithBackground(newPosition);
                                         if (collidedRectangleIndice == -1) {
+                                            if (newPosition.getCenterX() > maxX)
+                                            {
+                                                newPosition = new Rectangle(
+                                                        minX + shape.getCenterX() - speed - maxX,
+                                                        shape.getCenterY(),
+                                                        shape.getWidth(),
+                                                        shape.getHeight());
+                                            }
                                             ghost.moveToPoint(newPosition);
                                         } else {
                                             Rectangle newPositionAdjusted;

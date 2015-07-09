@@ -7,12 +7,19 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 
-public class GLSurf extends GLSurfaceView {
+import com.cocorporation.androidman.messages.MessagesManager;
+import com.cocorporation.androidman.messages.MessagesType;
+
+
+public class GLSurf extends GLSurfaceView{
+    Context mContext;
+    public static DialogHandler dialogHandler;
 
     private final GLRenderer mRenderer;
 
     public GLSurf(Context context) {
         super(context);
+        this.mContext = context;
 
         // Create an OpenGL ES 2.0 context.
         setEGLContextClientVersion(2);
@@ -23,6 +30,8 @@ public class GLSurf extends GLSurfaceView {
 
         // Render the view only when there is a change in the drawing data
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+
+        dialogHandler = new DialogHandler(context);
     }
 
     @Override
@@ -45,4 +54,5 @@ public class GLSurf extends GLSurfaceView {
         return true;
     }
 }
+
 

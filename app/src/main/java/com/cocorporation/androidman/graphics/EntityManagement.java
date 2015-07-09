@@ -30,9 +30,9 @@ public class EntityManagement {
         this.offsetx = offsetx;
         this.offsety = offsety;
         listOfGhost = new ArrayList<Ghost>();
-        listOfGhost.add(new Ghost(background.getInitPosXAndroidMan(), background.getInitPosYAndroidMan(), ((float)((int)(25.0f * factor)))-1.0f, factor, offsetx, offsety));
-        listOfGhost.add(new Ghost(background.getInitPosXAndroidMan(), background.getInitPosYAndroidMan(), ((float)((int)(25.0f * factor)))-1.0f, factor, offsetx, offsety));
-        listOfGhost.add(new Ghost(background.getInitPosXAndroidMan(), background.getInitPosYAndroidMan(), ((float)((int)(25.0f * factor)))-1.0f, factor, offsetx, offsety));
+        listOfGhost.add(new Ghost(background.getInitPosXGhosts(), background.getInitPosYGhosts(), ((float)((int)(25.0f * factor)))-1.0f, factor, offsetx, offsety));
+        listOfGhost.add(new Ghost(background.getInitPosXGhosts(), background.getInitPosYGhosts(), ((float)((int)(25.0f * factor)))-1.0f, factor, offsetx, offsety));
+        listOfGhost.add(new Ghost(background.getInitPosXGhosts(), background.getInitPosYGhosts(), ((float)((int)(25.0f * factor)))-1.0f, factor, offsetx, offsety));
         androidMan = new AndroidMan(background.getInitPosXAndroidMan(), background.getInitPosYAndroidMan(), ((float)((int)(25.0f * factor)))-1.0f, factor, offsetx, offsety);
         mover = new Mover(background);
         mover.setAndroidMan(androidMan);
