@@ -1,4 +1,4 @@
-package com.cocorporation.androidman.graphics;
+package com.cocorporation.androidman.core;
 
 /**
  * Created by Corentin on 4/19/2015.

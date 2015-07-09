@@ -1,7 +1,9 @@
-package com.cocorporation.androidman.graphics;
+package com.cocorporation.androidman.core;
 
 import android.util.Log;
 
+import com.cocorporation.androidman.graphics.Background;
+import com.cocorporation.androidman.graphics.Direction;
 import com.cocorporation.androidman.messages.MessagesManager;
 import com.cocorporation.androidman.messages.MessagesType;
 

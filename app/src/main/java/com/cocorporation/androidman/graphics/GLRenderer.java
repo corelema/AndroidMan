@@ -8,13 +8,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,16 +21,10 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.os.Message;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 
-import com.cocorporation.androidman.R;
+import com.cocorporation.androidman.core.AndroidMan;
+import com.cocorporation.androidman.core.EntityManagement;
 import com.cocorporation.androidman.messages.MessagesManager;
 import com.cocorporation.androidman.messages.MessagesType;
 

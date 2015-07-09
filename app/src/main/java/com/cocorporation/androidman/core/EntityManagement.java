@@ -1,4 +1,7 @@
-package com.cocorporation.androidman.graphics;
+package com.cocorporation.androidman.core;
+
+import com.cocorporation.androidman.graphics.Background;
+import com.cocorporation.androidman.graphics.Direction;
 
 import java.util.ArrayList;
 import java.util.List;

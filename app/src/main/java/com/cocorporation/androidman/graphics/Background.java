@@ -2,6 +2,7 @@ package com.cocorporation.androidman.graphics;
 
 import android.util.Log;
 
+import com.cocorporation.androidman.core.Rectangle;
 import com.cocorporation.androidman.messages.MessageReceiver;
 import com.cocorporation.androidman.messages.MessagesManager;
 import com.cocorporation.androidman.messages.MessagesType;

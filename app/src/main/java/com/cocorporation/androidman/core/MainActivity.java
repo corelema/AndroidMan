@@ -1,32 +1,40 @@
-package com.cocorporation.androidman.graphics;
+package com.cocorporation.androidman.core;
 
-import android.app.Dialog;
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.app.Activity;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.cocorporation.androidman.R;
+import com.cocorporation.androidman.graphics.GLSurf;
 import com.cocorporation.androidman.messages.MessageReceiver;
 import com.cocorporation.androidman.messages.MessagesManager;
 import com.cocorporation.androidman.messages.MessagesType;
 
+/**
+ * Main Activity.
+ *
+ * <P>Android Activity
+ *
+ * <P>Handles the creation of all the graphics.
+ *
+ * <P>Handles the registration of the surface to the message system.
+ *
+ * @author Corentin Leman
+ * @version 1.0
+ */
 public class MainActivity extends Activity implements MessageReceiver {
 
     // Our OpenGL Surfaceview
     private GLSurfaceView glSurfaceView;
 
+    /**
+     * Handles the creation of the glSurfaceView.
+     * Takes care of setting the Activity's view.
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -55,6 +63,10 @@ public class MainActivity extends Activity implements MessageReceiver {
         MessagesManager.getInstance().registerForMessage(MessagesType.WIN, this);
     }
 
+    /**
+     * Un-subscribe the glSurfaceView from receiving the messages.
+     *
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -62,6 +74,10 @@ public class MainActivity extends Activity implements MessageReceiver {
         MessagesManager.getInstance().unsubscribe(MessagesType.WIN, this);
     }
 
+    /**
+     * Subscribe the glSurfaceView from receiving the messages.
+     *
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -69,6 +85,10 @@ public class MainActivity extends Activity implements MessageReceiver {
         MessagesManager.getInstance().registerForMessage(MessagesType.WIN, this);
     }
 
+    /**
+     * Handles the behavior when a 'WIN' message is received.
+     *
+     */
     @Override
     public void receiveMessage(Object message) {
 

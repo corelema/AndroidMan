@@ -1,6 +1,8 @@
-package com.cocorporation.androidman.graphics;
+package com.cocorporation.androidman.core;
 
 import android.graphics.Color;
+
+import com.cocorporation.androidman.graphics.Direction;
 
 /**
  * Created by Corentin on 4/19/2015.

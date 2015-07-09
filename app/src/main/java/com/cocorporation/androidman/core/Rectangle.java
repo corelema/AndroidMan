@@ -1,4 +1,4 @@
-package com.cocorporation.androidman.graphics;
+package com.cocorporation.androidman.core;
 
 import android.util.Log;
 
