@@ -15,13 +15,16 @@ import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.os.Message;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
+import android.view.WindowManager;
 
 import com.cocorporation.androidman.core.AndroidMan;
 import com.cocorporation.androidman.core.EntityManagement;
@@ -48,13 +51,16 @@ public class GLRenderer implements Renderer {
     // Background variables
     Background background;
 
+    //Buttons variables
+    Controls controls;
+
     // Manage the entities
     EntityManagement entityManagement;
     int numberOfIndicesToPlot = 0;
 
     // Our screenresolution
-    float   mScreenWidth = 1920;
-    float   mScreenHeight = 1080;
+    float   mScreenWidth = 1080;
+    float   mScreenHeight = 1920;
 
     // Misc
     Context mContext;
@@ -67,11 +73,25 @@ public class GLRenderer implements Renderer {
     {
         mContext = c;
         mLastTime = System.currentTimeMillis() + 100;
-        factor = mScreenHeight/570.0f;
-        background = new Background(factor, offsetx, offsety);
+        updateScreenSize();
+        background = new Background(mScreenWidth, mScreenHeight, offsetx);
+        factor = mScreenWidth/background.getMaxWidthPattern();
+        this.offsety = mScreenHeight - (background.getMaxHeightPattern() * factor);
         background.createBasicBackground();
         MessagesManager.getInstance().registerForMessage(MessagesType.DELETEAPPLE, background);
         entityManagement = new EntityManagement(factor, offsetx, offsety, background);
+
+        setupControls();
+    }
+
+    private void updateScreenSize()
+    {
+        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        mScreenWidth = size.x;
+        mScreenHeight = size.y;
     }
 
     public void onPause()
@@ -131,6 +151,9 @@ public class GLRenderer implements Renderer {
 
         // Render AndroidMan
         renderGhosts(mtrxProjectionAndView);
+
+        // Draw all the controls
+        drawControls();
 
         // Save the current time to see how long it took <img class="wp-smiley" alt=":)" src="http://androidblog.reindustries.com/wp-includes/images/smilies/icon_smile.gif"> .
         mLastTime = now;
@@ -423,8 +446,8 @@ public class GLRenderer implements Renderer {
         uvBuffer.position(0);
 
         // Generate Textures, if more needed, alter these numbers.
-        int[] texturenames = new int[2];
-        GLES20.glGenTextures(2, texturenames, 0);
+        int[] texturenames = new int[3];
+        GLES20.glGenTextures(3, texturenames, 0);
 
         // Retrieve our image from resources.
         int id1 = mContext.getResources().getIdentifier("mipmap/ic_launcher", null,
@@ -473,6 +496,42 @@ public class GLRenderer implements Renderer {
                 GLES20.GL_CLAMP_TO_EDGE);
 
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp2, 0);
+
+
+        //TODO REMOVE
+        // Retrieve our image from resources.
+        int id = mContext.getResources().getIdentifier("mipmap/buttons", null,
+                mContext.getPackageName());
+
+        // Temporary create a bitmap
+        Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(), id);
+
+        // Bind texture to texturename
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE2);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texturenames[2]);
+
+
+        // Set filtering
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
+                GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER,
+                GLES20.GL_LINEAR);
+
+        // Set wrapping mode
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S,
+                GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T,
+                GLES20.GL_CLAMP_TO_EDGE);
+
+        // Load the bitmap into the bound texture.
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
+
+
+        // We are done using the bitmap so we should recycle it.
+        bmp.recycle();
+
+
+        //TODO REMOVE
 
 
         // We are done using the bitmap so we should recycle it.
@@ -599,7 +658,7 @@ public class GLRenderer implements Renderer {
         if (eventAction == MotionEvent.ACTION_DOWN || eventAction == MotionEvent.ACTION_MOVE)
         {
             Direction direction;
-            if (event.getY()>mScreenHeight*3/4)
+            /*if (event.getY()>mScreenHeight*3/4)
             {
                 // Down screen touch
                 direction = Direction.DOWN;
@@ -618,12 +677,30 @@ public class GLRenderer implements Renderer {
             {
                 // Right screen touch
                 direction = Direction.RIGHT;
-            }
-            entityManagement.getAndroidMan().setMoveParameters(direction, 2.0f);
+            }*/
+            controls.touchAt(event.getX(), mScreenHeight - event.getY());
+            direction = controls.getDirection();
+            entityManagement.getAndroidMan().setMoveParameters(direction, 2.0f); //TODO check if I handle a null direction
+
+
         }
         else if (eventAction == MotionEvent.ACTION_UP)
         {
             entityManagement.getAndroidMan().stopMoving();
+            controls.resetButtons();
         }
+    }
+
+    private void setupControls()
+    {
+        controls = new Controls(mContext, 0, mScreenWidth, 0, offsety);
+        controls.setupImage(GLES20.GL_TEXTURE2);
+    }
+
+    private void drawControls()
+    {
+        controls.bufferize();
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+        controls.render(mtrxProjectionAndView, GLES20.GL_TEXTURE2);
     }
 }

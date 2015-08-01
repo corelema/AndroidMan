@@ -24,6 +24,8 @@ public class Background implements MessageReceiver {
     private float factor;
     private float offsetx;
     private float offsety;
+    private float maxWidthPattern;
+    private float maxHeightPattern;
 
     // Initial position for AndroidMan, depends on which background is implemented
     private float initPosXAndroidMan;
@@ -43,24 +45,35 @@ public class Background implements MessageReceiver {
     private List<Rectangle> rectangleList;
     private List<Rectangle> appleList;
 
-    public Background(float factor, float offsetx, float offsety)
+    public Background(float widthScreen, float heightScreen, float offsetx)
     {
         rectangleList = new ArrayList<Rectangle>();
         appleList = new ArrayList<Rectangle>();
-        this.factor = factor;
+        maxWidthPattern = 570.0f;//TODO: calculate in createBasicBackground
+        maxHeightPattern = 620.0f;
+        this.factor = widthScreen/maxWidthPattern;
         this.offsetx = offsetx;
-        this.offsety = offsety;
+        this.offsety = heightScreen - (maxHeightPattern * factor);
     }
 
     public void createBasicBackground()
     {
+        /*//TODO either change this or change the way the entities are created
         initPosXAndroidMan = offsetx + factor * 35.0f;
         initPosYAndroidMan = offsety + factor * 215.0f;
 
         initPosXGhosts = offsetx + factor * 260.0f;
         initPosYGhosts = offsety + factor * 330.0f;
+*/
 
-        maxX = offsetx + factor * 570;
+        initPosXAndroidMan = factor * 35.0f;
+        initPosYAndroidMan = factor * 215.0f;
+
+        initPosXGhosts = factor * 260.0f;
+        initPosYGhosts = factor * 330.0f;
+
+        maxWidthPattern = 570;
+        maxX = offsetx + factor * maxWidthPattern;
         minX = offsetx + factor * 0;
 
         createRectangle(0,120,360,370);
@@ -314,4 +327,8 @@ public class Background implements MessageReceiver {
     public float getInitPosYGhosts() {
         return initPosYGhosts;
     }
+
+    public float getMaxWidthPattern() {return maxWidthPattern;}
+
+    public float getMaxHeightPattern() {return maxHeightPattern;}
 }

@@ -1,7 +1,7 @@
 package com.cocorporation.androidman.core;
 
 /**
- * Hotels Management Object.
+ * Abstract Entity Object.
  *
  * <P>Base class for the ghosts and AndroidMan.
  *
