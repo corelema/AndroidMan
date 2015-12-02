@@ -43,7 +43,7 @@ public class EntityManagement {
         mover.addMovingGhost(listOfGhost.get(1));
         mover.addMovingGhost(listOfGhost.get(2));
         mover.launchMovementAndroidMan();
-        mover.launchMovementGhosts();;
+        mover.launchMovementGhosts();
     }
 
     public void addGhost()

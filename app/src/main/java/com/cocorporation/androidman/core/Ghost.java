@@ -88,7 +88,7 @@ public class Ghost extends AbstractEntity {
         this.lastDirection = lastDirection;
     }
 
-    public int getChangeDirectionCountDown() {
-        return changeDirectionCountDown;
+    public boolean canChangeDirection() {
+        return changeDirectionCountDown == 0;
     }
 }
