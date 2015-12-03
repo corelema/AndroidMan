@@ -29,6 +29,10 @@ public class Rectangle {
         this.height = (y2-y1)/2;
     }
 
+    public Rectangle(Rectangle rectangle) {
+        this(rectangle.centerX, rectangle.centerY, rectangle.width, rectangle.height);
+    }
+
     public boolean intersect(Rectangle rect)
     {
         if (abs(centerX, rect.getCenterX())<width+rect.getWidth()
@@ -55,6 +59,54 @@ public class Rectangle {
     private float abs(float f1, float f2)
     {
         return (f1-f2>0?f1-f2:f2-f1);
+    }
+
+    public Rectangle addToX(float dimension) {
+        Rectangle copy = new Rectangle(this);
+        copy.centerX += dimension;
+        return copy;
+    }
+
+    public Rectangle addToY(float dimension) {
+        Rectangle copy = new Rectangle(this);
+        copy.centerY += dimension;
+        return copy;
+    }
+
+    public Rectangle addToWidth(float dimension) {
+        Rectangle copy = new Rectangle(this);
+        copy.width += dimension;
+        return copy;
+    }
+
+    public Rectangle addToHeight(float dimension) {
+        Rectangle copy = new Rectangle(this);
+        copy.height += dimension;
+        return copy;
+    }
+
+    public Rectangle replaceX(float newX) {
+        Rectangle copy = new Rectangle(this);
+        copy.centerX = newX;
+        return copy;
+    }
+
+    public Rectangle replaceY(float newY) {
+        Rectangle copy = new Rectangle(this);
+        copy.centerY = newY;
+        return copy;
+    }
+
+    public Rectangle replaceWidth(float newWidth) {
+        Rectangle copy = new Rectangle(this);
+        copy.width = newWidth;
+        return copy;
+    }
+
+    public Rectangle replaceHeight(float newHeight) {
+        Rectangle copy = new Rectangle(this);
+        copy.height = newHeight;
+        return copy;
     }
 
     public float getCenterX() {

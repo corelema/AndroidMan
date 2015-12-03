@@ -8,7 +8,9 @@ import com.cocorporation.androidman.messages.MessagesManager;
 import com.cocorporation.androidman.messages.MessagesType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Corentin on 4/26/2015.
@@ -21,6 +23,7 @@ public class Mover {
     private static final int numberOfNeighboorsToTest = 40;
     private static final float colleteralStepsCheck = 5.0f;
     private static final float SPACE_BETWEEN_ENTITY_AND_WALL = 1.0f;
+    private static final float SMALLEST_STEP_FURTHER = 1.0f;
     private static final float SPEED_NULL = 0.0f;
 
     private List<Rectangle> backgroundRectangles;
@@ -149,35 +152,19 @@ public class Mover {
         Rectangle newPosition = null;
         switch (direction) {
             case UP:
-                newPosition = new Rectangle(
-                        shape.getCenterX(),
-                        shape.getCenterY() + speed,
-                        shape.getWidth(),
-                        shape.getHeight());
+                newPosition = shape.addToY(speed);
                 break;
 
             case DOWN:
-                newPosition = new Rectangle(
-                        shape.getCenterX(),
-                        shape.getCenterY() - speed,
-                        shape.getWidth(),
-                        shape.getHeight());
+                newPosition = shape.addToY(- speed);
                 break;
 
             case LEFT:
-                newPosition = new Rectangle(
-                        shape.getCenterX() - speed,
-                        shape.getCenterY(),
-                        shape.getWidth(),
-                        shape.getHeight());
+                newPosition = shape.addToX(-speed);
                 break;
 
             case RIGHT:
-                newPosition = new Rectangle(
-                        shape.getCenterX() + speed,
-                        shape.getCenterY(),
-                        shape.getWidth(),
-                        shape.getHeight());
+                newPosition = shape.addToX(speed);
                 break;
         }
 
@@ -188,35 +175,19 @@ public class Mover {
         Rectangle newPositionAdjusted = null;
         switch (direction) {
             case UP:
-                newPositionAdjusted = new Rectangle(
-                        newPosition.getCenterX(),
-                        (float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY1() - newPosition.getHeight()) - SPACE_BETWEEN_ENTITY_AND_WALL,
-                        newPosition.getWidth(),
-                        newPosition.getHeight());
+                newPositionAdjusted = newPosition.replaceY((float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY1() - newPosition.getHeight()) - SPACE_BETWEEN_ENTITY_AND_WALL);
                 break;
 
             case DOWN:
-                newPositionAdjusted = new Rectangle(
-                        newPosition.getCenterX(),
-                        (float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY2() + newPosition.getHeight() + SPACE_BETWEEN_ENTITY_AND_WALL),
-                        newPosition.getWidth(),
-                        newPosition.getHeight());
+                newPositionAdjusted = newPosition.replaceY((float) (int) (backgroundRectangles.get(collidedRectangleIndice).getY2() + newPosition.getHeight() + SPACE_BETWEEN_ENTITY_AND_WALL));
                 break;
 
             case LEFT:
-                newPositionAdjusted = new Rectangle(
-                        (float)(int)(backgroundRectangles.get(collidedRectangleIndice).getX2() + newPosition.getWidth()) + SPACE_BETWEEN_ENTITY_AND_WALL,
-                        newPosition.getCenterY(),
-                        newPosition.getWidth(),
-                        newPosition.getHeight());
+                newPositionAdjusted = newPosition.replaceX((float) (int) (backgroundRectangles.get(collidedRectangleIndice).getX2() + newPosition.getWidth()) + SPACE_BETWEEN_ENTITY_AND_WALL);
                 break;
 
             case RIGHT:
-                newPositionAdjusted = new Rectangle(
-                        (float)(int)(backgroundRectangles.get(collidedRectangleIndice).getX1() - newPosition.getWidth()) - SPACE_BETWEEN_ENTITY_AND_WALL,
-                        newPosition.getCenterY(),
-                        newPosition.getWidth(),
-                        newPosition.getHeight());
+                newPositionAdjusted = newPosition.replaceX((float) (int) (backgroundRectangles.get(collidedRectangleIndice).getX1() - newPosition.getWidth()) - SPACE_BETWEEN_ENTITY_AND_WALL);
                 break;
         }
         return newPositionAdjusted;
@@ -224,6 +195,14 @@ public class Mover {
 
     private boolean isCollided(int collidedRectangleIndice) {
         return !(collidedRectangleIndice == NO_COLLISION);
+    }
+
+    /**
+     * Use whenever we want to check if it collides with the background
+     * but we don't want to keep the indice of the collided rectangle.*/
+    private boolean isCollided(Rectangle rectangle) {
+        int collidedRectangleIndice = collisionWithBackground(rectangle);
+        return isCollided(collidedRectangleIndice);
     }
 
     public void launchMovementGhosts()
@@ -326,45 +305,29 @@ public class Mover {
         Rectangle testPosition1, testPosition2;
         float currentSpeed = entity.getSpeed();
 
-        List<Direction> directionsPossible = new ArrayList<Direction>();
+        Set<Direction> directionsPossible = new HashSet<Direction>();
 
         if (currentDirection == Direction.UP || currentDirection == Direction.DOWN)
         {
-            testPosition1 = new Rectangle(
-                    currentPosition.getCenterX() - colleteralStepsCheck,
-                    currentPosition.getCenterY(),
-                    currentPosition.getWidth(),
-                    currentPosition.getHeight());
+            testPosition1 = currentPosition.addToX(- colleteralStepsCheck);
 
-            if (collisionWithBackground(testPosition1) == -1) //left is ok
+            if (!isCollided(testPosition1)) //left is ok
                 directionsPossible.add(Direction.LEFT);
 
-            testPosition2 = new Rectangle(
-                    currentPosition.getCenterX() + colleteralStepsCheck,
-                    currentPosition.getCenterY(),
-                    currentPosition.getWidth(),
-                    currentPosition.getHeight());
+            testPosition2 = currentPosition.addToX(colleteralStepsCheck);
 
-            if (collisionWithBackground(testPosition2) == -1) //right is ok
+            if (!isCollided(testPosition2)) //right is ok
                 directionsPossible.add(Direction.RIGHT);
 
         }
         else //currentDirection == LEFT or RIGHT
         {
-            testPosition1 = new Rectangle(
-                    currentPosition.getCenterX(),
-                    currentPosition.getCenterY() - colleteralStepsCheck,
-                    currentPosition.getWidth(),
-                    currentPosition.getHeight());
+            testPosition1 = currentPosition.addToY(- colleteralStepsCheck);
 
-            if (collisionWithBackground(testPosition1) == -1) //down is ok
+            if (!isCollided(testPosition1)) //down is ok
                 directionsPossible.add(Direction.DOWN);
 
-            testPosition2 = new Rectangle(
-                    currentPosition.getCenterX(),
-                    currentPosition.getCenterY() + colleteralStepsCheck,
-                    currentPosition.getWidth(),
-                    currentPosition.getHeight());
+            testPosition2 = currentPosition.addToY(colleteralStepsCheck);
 
             if (collisionWithBackground(testPosition2) == -1) //up is ok
                 directionsPossible.add(Direction.UP);
@@ -373,48 +336,34 @@ public class Mover {
         switch(currentDirection) // checking if we can continue moving forward
         {
             case UP:
-                testPosition1 = new Rectangle(
-                        currentPosition.getCenterX(),
-                        currentPosition.getCenterY() + currentSpeed+1,
-                        currentPosition.getWidth(),
-                        currentPosition.getHeight());
+                testPosition1 = currentPosition.addToY(currentSpeed + SMALLEST_STEP_FURTHER);
 
-                if (collisionWithBackground(testPosition1) == -1) //continuing up is ok
+                if (!isCollided(testPosition1)) //continuing up is ok
                     directionsPossible.add(Direction.UP);
                 break;
             case DOWN:
-                testPosition1 = new Rectangle(
-                        currentPosition.getCenterX(),
-                        currentPosition.getCenterY() - currentSpeed-1,
-                        currentPosition.getWidth(),
-                        currentPosition.getHeight());
+                testPosition1 = currentPosition.addToY(- currentSpeed - SMALLEST_STEP_FURTHER);
 
-                if (collisionWithBackground(testPosition1) == -1) //continuing down is ok
+                if (!isCollided(testPosition1)) //continuing down is ok
                     directionsPossible.add(Direction.DOWN);
                 break;
             case LEFT:
-                testPosition1 = new Rectangle(
-                        currentPosition.getCenterX() - currentSpeed-1,
-                        currentPosition.getCenterY(),
-                        currentPosition.getWidth(),
-                        currentPosition.getHeight());
+                testPosition1 = currentPosition.addToX(- currentSpeed - SMALLEST_STEP_FURTHER);
 
-                if (collisionWithBackground(testPosition1) == -1) //continuing left is ok
+                if (!isCollided(testPosition1)) //continuing left is ok
                     directionsPossible.add(Direction.LEFT);
                 break;
             case RIGHT:
-                testPosition1 = new Rectangle(
-                        currentPosition.getCenterX() + currentSpeed+1,
-                        currentPosition.getCenterY(),
-                        currentPosition.getWidth(),
-                        currentPosition.getHeight());
+                testPosition1 = currentPosition.addToX(currentSpeed + SMALLEST_STEP_FURTHER);
 
-                if (collisionWithBackground(testPosition1) == -1) //continuing right is ok
+                if (!isCollided(testPosition1)) //continuing right is ok
                     directionsPossible.add(Direction.RIGHT);
                 break;
         }
 
-        return directionsPossible;
+        List<Direction> directionsPossibleToReturn = new ArrayList<Direction>();
+        directionsPossibleToReturn.addAll(directionsPossible);
+        return directionsPossibleToReturn;
     }
 
     private Rectangle stepCloserToNearestPath(AbstractEntity entity)
@@ -424,7 +373,7 @@ public class Mover {
         float speed = entity.getSpeed();
         Rectangle newPosition = null;
         Rectangle testPosition;
-        for (int i=0;i<numberOfNeighboorsToTest;i++)
+        for (int i = 0 ; i < numberOfNeighboorsToTest ; i++)
         {
             switch (direction)
             {
