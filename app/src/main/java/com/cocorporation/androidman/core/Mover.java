@@ -1,5 +1,6 @@
 package com.cocorporation.androidman.core;
 
+import android.graphics.Rect;
 import android.util.Log;
 
 import com.cocorporation.androidman.graphics.Background;
@@ -24,6 +25,7 @@ public class Mover {
     private static final float colleteralStepsCheck = 5.0f;
     private static final float SPACE_BETWEEN_ENTITY_AND_WALL = 1.0f;
     private static final float SMALLEST_STEP_FURTHER = 1.0f;
+    private static final float LATTERAL_SPACE_TO_CHECK = 5.0f;
     private static final float SPEED_NULL = 0.0f;
 
     private List<Rectangle> backgroundRectangles;
@@ -156,7 +158,7 @@ public class Mover {
                 break;
 
             case DOWN:
-                newPosition = shape.addToY(- speed);
+                newPosition = shape.addToY(-speed);
                 break;
 
             case LEFT:
@@ -302,68 +304,72 @@ public class Mover {
     private List<Direction> findPossibleDirections(AbstractEntity entity) {
         Direction currentDirection = entity.currentDirection;
         Rectangle currentPosition = entity.getShape();
-        Rectangle testPosition1, testPosition2;
+        Rectangle testPosition;
         float currentSpeed = entity.getSpeed();
 
-        Set<Direction> directionsPossible = new HashSet<Direction>();
+        Set<Direction> directionsPossible = new HashSet<>();
 
-        if (currentDirection == Direction.UP || currentDirection == Direction.DOWN)
-        {
-            testPosition1 = currentPosition.addToX(- colleteralStepsCheck);
-
-            if (!isCollided(testPosition1)) //left is ok
-                directionsPossible.add(Direction.LEFT);
-
-            testPosition2 = currentPosition.addToX(colleteralStepsCheck);
-
-            if (!isCollided(testPosition2)) //right is ok
-                directionsPossible.add(Direction.RIGHT);
-
-        }
-        else //currentDirection == LEFT or RIGHT
-        {
-            testPosition1 = currentPosition.addToY(- colleteralStepsCheck);
-
-            if (!isCollided(testPosition1)) //down is ok
-                directionsPossible.add(Direction.DOWN);
-
-            testPosition2 = currentPosition.addToY(colleteralStepsCheck);
-
-            if (collisionWithBackground(testPosition2) == -1) //up is ok
-                directionsPossible.add(Direction.UP);
-        }
-
-        switch(currentDirection) // checking if we can continue moving forward
+        switch(currentDirection)
         {
             case UP:
-                testPosition1 = currentPosition.addToY(currentSpeed + SMALLEST_STEP_FURTHER);
+                testPosition = currentPosition.addToY(currentSpeed + SMALLEST_STEP_FURTHER);
 
-                if (!isCollided(testPosition1)) //continuing up is ok
+                if (!isCollided(testPosition))
                     directionsPossible.add(Direction.UP);
+
+                collateralLeftRightCheck(currentPosition, directionsPossible);
                 break;
             case DOWN:
-                testPosition1 = currentPosition.addToY(- currentSpeed - SMALLEST_STEP_FURTHER);
+                testPosition = currentPosition.addToY(- currentSpeed - SMALLEST_STEP_FURTHER);
 
-                if (!isCollided(testPosition1)) //continuing down is ok
+                if (!isCollided(testPosition))
                     directionsPossible.add(Direction.DOWN);
+
+                collateralLeftRightCheck(currentPosition, directionsPossible);
                 break;
             case LEFT:
-                testPosition1 = currentPosition.addToX(- currentSpeed - SMALLEST_STEP_FURTHER);
+                testPosition = currentPosition.addToX(- currentSpeed - SMALLEST_STEP_FURTHER);
 
-                if (!isCollided(testPosition1)) //continuing left is ok
+                if (!isCollided(testPosition))
                     directionsPossible.add(Direction.LEFT);
+
+                collateralUpDownCheck(currentPosition, directionsPossible);
                 break;
             case RIGHT:
-                testPosition1 = currentPosition.addToX(currentSpeed + SMALLEST_STEP_FURTHER);
+                testPosition = currentPosition.addToX(currentSpeed + SMALLEST_STEP_FURTHER);
 
-                if (!isCollided(testPosition1)) //continuing right is ok
+                if (!isCollided(testPosition))
                     directionsPossible.add(Direction.RIGHT);
+
+                collateralUpDownCheck(currentPosition, directionsPossible);
                 break;
         }
 
-        List<Direction> directionsPossibleToReturn = new ArrayList<Direction>();
-        directionsPossibleToReturn.addAll(directionsPossible);
-        return directionsPossibleToReturn;
+        return  new ArrayList<>(directionsPossible);
+    }
+
+    private void collateralUpDownCheck(Rectangle currentPosition, Set<Direction> directionsPossible) {
+        Rectangle testPosition = currentPosition.addToY(- colleteralStepsCheck);
+
+        if (!isCollided(testPosition)) //down is ok
+            directionsPossible.add(Direction.DOWN);
+
+        testPosition = currentPosition.addToY(colleteralStepsCheck);
+
+        if (!isCollided(testPosition)) //up is ok
+            directionsPossible.add(Direction.UP);
+    }
+
+    private void collateralLeftRightCheck(Rectangle currentPosition, Set<Direction> directionsPossible) {
+        Rectangle testPosition = currentPosition.addToX(- colleteralStepsCheck);
+
+        if (!isCollided(testPosition)) //left is ok
+            directionsPossible.add(Direction.LEFT);
+
+        testPosition = currentPosition.addToX(colleteralStepsCheck);
+
+        if (!isCollided(testPosition)) //right is ok
+            directionsPossible.add(Direction.RIGHT);
     }
 
     private Rectangle stepCloserToNearestPath(AbstractEntity entity)
