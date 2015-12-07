@@ -25,7 +25,7 @@ public class Mover {
     private static final float colleteralStepsCheck = 5.0f;
     private static final float SPACE_BETWEEN_ENTITY_AND_WALL = 1.0f;
     private static final float SMALLEST_STEP_FURTHER = 1.0f;
-    private static final float LATTERAL_SPACE_TO_CHECK = 5.0f;
+    private static final float STEP_AHEAD_TO_CHECK = 5.0f;
     private static final float SPEED_NULL = 0.0f;
 
     private List<Rectangle> backgroundRectangles;
@@ -103,7 +103,7 @@ public class Mover {
         else {
             Rectangle newPositionAdjusted;
             if (isAlreadyAgainstWall(collidedRectangleIndice, newPosition, currentShape, direction)) {
-                newPositionAdjusted = stepCloserToNearestPath(androidMan);
+                newPositionAdjusted = stepCloserToNearestPath(androidMan, direction);
             } else {
                 newPositionAdjusted = newAdjustedPositionFromNewPositionAndCollidedRectangle(newPosition, collidedRectangleIndice, direction);
             }
@@ -116,8 +116,20 @@ public class Mover {
         }
 
         if (positionUpdated) {
+            checkBoundaries(newPosition);
             androidMan.moveToPoint(newPosition);
             eatApplesTouched(androidMan);
+        }
+    }
+
+    private void checkBoundaries(Rectangle position)
+    {
+        if (position.getCenterX() > maxX)
+        {
+            position.setCenterX(minX + position.getCenterX() - maxX);
+        } else if (position.getCenterX() < minX)
+        {
+            position.setCenterX(maxX - position.getCenterX() + minX);
         }
     }
 
@@ -246,7 +258,7 @@ public class Mover {
         if (isCollided(collidedRectangleIndice)) {
             Rectangle newPositionAdjusted;
             if (isAlreadyAgainstWall(collidedRectangleIndice, newPosition, shape, direction)) {
-                newPositionAdjusted = stepCloserToNearestPath(ghost);
+                newPositionAdjusted = stepCloserToNearestPath(ghost, direction);
             } else {
                 newPositionAdjusted = newAdjustedPositionFromNewPositionAndCollidedRectangle(newPosition, collidedRectangleIndice, direction);
             }
@@ -258,6 +270,7 @@ public class Mover {
                 ghost.resetDirectionCountDown();
             }
         } else {
+            checkBoundaries(newPosition);
             ghost.moveToPoint(newPosition);
         }
     }
@@ -298,7 +311,7 @@ public class Mover {
                 return backgroundRectangles.indexOf(rec);
             }
         }
-        return -1;
+        return NO_COLLISION;
     }
 
     private List<Direction> findPossibleDirections(AbstractEntity entity) {
@@ -349,7 +362,7 @@ public class Mover {
     }
 
     private void collateralUpDownCheck(Rectangle currentPosition, Set<Direction> directionsPossible) {
-        Rectangle testPosition = currentPosition.addToY(- colleteralStepsCheck);
+        Rectangle testPosition = currentPosition.addToY(-colleteralStepsCheck);
 
         if (!isCollided(testPosition)) //down is ok
             directionsPossible.add(Direction.DOWN);
@@ -361,7 +374,7 @@ public class Mover {
     }
 
     private void collateralLeftRightCheck(Rectangle currentPosition, Set<Direction> directionsPossible) {
-        Rectangle testPosition = currentPosition.addToX(- colleteralStepsCheck);
+        Rectangle testPosition = currentPosition.addToX(-colleteralStepsCheck);
 
         if (!isCollided(testPosition)) //left is ok
             directionsPossible.add(Direction.LEFT);
@@ -372,6 +385,7 @@ public class Mover {
             directionsPossible.add(Direction.RIGHT);
     }
 
+    /*
     private Rectangle stepCloserToNearestPath(AbstractEntity entity)
     {
         Direction direction = entity.getCurrentDirection();
@@ -549,6 +563,85 @@ public class Mover {
             }
         }
         return newPosition;
+    }
+    */
+
+    private Rectangle stepCloserToNearestPath(AbstractEntity entity, Direction direction)
+    {
+        Rectangle shape = entity.getShape();
+        float speed = entity.getSpeed();
+        Rectangle newPosition = null;
+        Rectangle testPosition;
+        for (int i = 0 ; i < numberOfNeighboorsToTest ; i++)
+        {
+            float incrementMax = (float) i;
+            testPosition = sideStepToTest(shape, incrementMax, direction);
+            if (!isCollided(testPosition))
+            {
+                newPosition = getFurtherPositionPossible(direction, shape, speed, incrementMax);
+            } else {
+                testPosition = sideStepToTest(shape, - incrementMax, direction);
+                if (!isCollided(testPosition))
+                {
+                    newPosition = getFurtherPositionPossible(direction, shape, - speed, - incrementMax);
+                }
+            }
+            if (newPosition != null)
+            {
+                break;
+            }
+        }
+        return newPosition;
+    }
+
+    private Rectangle getFurtherPositionPossible(Direction direction, Rectangle shape, float speed, float incrementMax) {
+        Rectangle newPosition = sideStepToGetTo(shape, incrementMax, direction);
+        if (isOutOfReachInOneStep(shape, newPosition, speed))
+            newPosition = sideStepToGetTo(shape, speed, direction);
+        return newPosition;
+    }
+
+    private Rectangle sideStepToGetTo(Rectangle shape, float increment, Direction direction) {
+        Rectangle newPosition = null;
+
+        switch (direction) {
+            case UP:
+            case DOWN:
+                newPosition = shape.addToX(increment);
+                break;
+
+            case LEFT:
+            case RIGHT:
+                newPosition = shape.addToY(increment);
+                break;
+        }
+        return newPosition;
+    }
+
+    private Rectangle sideStepToTest(Rectangle shape, float increment, Direction direction) {
+        Rectangle testPosition = null;
+        switch (direction) {
+            case UP:
+                testPosition = shape.addToX(increment).addToY(STEP_AHEAD_TO_CHECK);
+                break;
+
+            case DOWN:
+                testPosition = shape.addToX(increment).addToY(- STEP_AHEAD_TO_CHECK);
+                break;
+
+            case LEFT:
+                testPosition = shape.addToX(- STEP_AHEAD_TO_CHECK).addToY(increment);
+                break;
+
+            case RIGHT:
+                testPosition = shape.addToX(STEP_AHEAD_TO_CHECK).addToY(increment);
+                break;
+        }
+        return testPosition;
+    }
+
+    private boolean isOutOfReachInOneStep(Rectangle currentPosition, Rectangle newPosition, float speed) {
+        return abs(newPosition.getCenterX(), currentPosition.getCenterX()) > speed;
     }
 
     private void eatApplesTouched(AbstractEntity entity)
